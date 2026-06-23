@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 43 74% 49%;
+    --primary-foreground: 0 0% 4%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 187 100% 42%;
+    --accent-foreground: 0 0% 4%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 43 74% 49%;
+
+    --radius: 0.75rem;
+
+    /* Custom luxury tokens */
+    --gold: 43 74% 49%;
+    --gold-light: 43 74% 60%;
+    --electric-blue: 187 100% 42%;
+    --charcoal: 0 0% 10%;
+    --charcoal-light: 0 0% 15%;
+    --glass: 0 0% 100% / 0.05;
+    --glass-border: 0 0% 100% / 0.1;
+
+    /* Gradients */
+    --gradient-gold: linear-gradient(135deg, hsl(43 74% 49%), hsl(43 74% 35%));
+    --gradient-blue: linear-gradient(135deg, hsl(187 100% 42%), hsl(200 100% 35%));
+    --gradient-dark: linear-gradient(180deg, hsl(0 0% 4%), hsl(0 0% 8%));
+    --gradient-radial: radial-gradient(ellipse at center, hsl(0 0% 12%), hsl(0 0% 4%));
+
+    /* Shadows */
+    --shadow-gold: 0 0 40px hsl(43 74% 49% / 0.3);
+    --shadow-blue: 0 0 40px hsl(187 100% 42% / 0.3);
+    --shadow-elegant: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
+
+    /* Typography */
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  .dark {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+  }
+
+  ::selection {
+    background: hsl(var(--gold));
+    color: #0b0b0b;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-[hsl(var(--glass))] backdrop-blur-xl border border-[hsl(var(--glass-border))];
+  }
+
+  .glass-strong {
+    @apply bg-[hsl(0_0%_100%/0.08)] backdrop-blur-2xl border border-[hsl(var(--glass-border))];
+  }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-[hsl(var(--gold))] to-[hsl(var(--gold-light))] bg-clip-text text-transparent;
+  }
+
+  .text-gradient-blue {
+    @apply bg-gradient-to-r from-[hsl(var(--electric-blue))] to-[hsl(200_100%_50%)] bg-clip-text text-transparent;
+  }
+
+  .glow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+
+  .glow-blue {
+    box-shadow: var(--shadow-blue);
+  }
+
+  .hover-glow-gold {
+    @apply transition-all duration-500;
+  }
+  
+  .hover-glow-gold:hover {
+    box-shadow: var(--shadow-gold);
+  }
+
+  .hover-glow-blue {
+    @apply transition-all duration-500;
+  }
+  
+  .hover-glow-blue:hover {
+    box-shadow: var(--shadow-blue);
+  }
+}
+
+@layer utilities {
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+}
