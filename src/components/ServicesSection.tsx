@@ -5,7 +5,6 @@ import {
   Layers,
   Lightbulb,
   Radio,
-  Sparkle,
   Workflow,
   Zap,
 } from "lucide-react";
@@ -43,15 +42,9 @@ const services = [
   },
   {
     icon: Zap,
-    title: "Experience ops",
+    title: "Experience operations",
     description: "Touring crews, technical riders, logistics, and vendor orchestration.",
     meta: "Production management / touring",
-  },
-  {
-    icon: Sparkle,
-    title: "Digital rollouts",
-    description: "Launch pages, motion systems, and campaign assets that extend the moment online.",
-    meta: "Web / motion / social kits",
   },
   {
     icon: Workflow,

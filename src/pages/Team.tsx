@@ -1,45 +1,22 @@
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import heroImage from "@/images/IMG_0777.jpg";
-import altImage from "@/images/IMG_0272.jpg";
+import altImage from "@/Images21/Africa Union/IMG_8050.webp";
+import ceoImage from "@/MAGNA TEAMS PHOTO/CEO.webp";
+import ctoImage from "@/MAGNA TEAMS PHOTO/CHIF OPERATING  OFFICER.webp";
 
 const leaders = [
   {
-    name: "Amira Khan",
-    title: "Chief Executive Officer",
+    name: "Yemane Yitbarek (owner)",
+    title: "CEO/CTO",
     focus: "Growth, partnerships, and market positioning across the region.",
-    image: heroImage,
+    image: ceoImage,
   },
   {
-    name: "Leo Martins",
-    title: "Chief Technology Officer",
+    name: "DANIEL ABAYNEH (owner)",
+    title: "COO (CHIEF OPERATING OFFICER)",
     focus: "Systems, broadcast pipelines, and on-site control innovation.",
-    image: altImage,
-  },
-  {
-    name: "Nora Ishikawa",
-    title: "Chief Creative Officer",
-    focus: "Experience design, stagecraft language, and content coherence.",
-    image: heroImage,
-  },
-  {
-    name: "Sami Al-Harthi",
-    title: "Director of Production",
-    focus: "Touring crews, scenic partners, and multi-city logistics.",
-    image: altImage,
-  },
-  {
-    name: "Priya Raman",
-    title: "Director of Post & Content",
-    focus: "Editorial, post pipelines, and launch-day content drops.",
-    image: heroImage,
-  },
-  {
-    name: "Jonas Meyer",
-    title: "Head of Client Experience",
-    focus: "Success metrics, feedback loops, and stakeholder readiness.",
-    image: altImage,
+    image: ctoImage,
   },
 ];
 

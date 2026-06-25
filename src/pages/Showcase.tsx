@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
-import heroImage from "@/images/IMG_0272.jpg";
+import heroImage from "@/Images21/Sheger city/IMG_2898.webp";
 
 const highlightMoments = [
   "Immersive stages + LED",

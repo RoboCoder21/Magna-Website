@@ -21,7 +21,6 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email").max(255),
   phone: z.string().min(10, "Please enter a valid phone number").max(20),
   eventType: z.string().min(1, "Please select an event type"),
-  budget: z.string().min(1, "Please select a budget range"),
   message: z.string().min(10, "Message must be at least 10 characters").max(1000),
 });
 
@@ -38,13 +37,6 @@ const eventTypes = [
   "Other",
 ];
 
-const budgetRanges = [
-  "Under $5,000",
-  "$5,000 - $15,000",
-  "$15,000 - $50,000",
-  "$50,000 - $100,000",
-  "$100,000+",
-];
 
 const ContactForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -203,24 +195,6 @@ const ContactForm = () => {
                 </div>
               </div>
 
-              {/* Budget */}
-              <div>
-                <Select onValueChange={(value) => setValue("budget", value)}>
-                  <SelectTrigger className="bg-charcoal border-border focus:border-gold h-12">
-                    <SelectValue placeholder="Budget Range" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-charcoal border-border">
-                    {budgetRanges.map((range) => (
-                      <SelectItem key={range} value={range}>
-                        {range}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.budget && (
-                  <p className="text-destructive text-sm mt-1">{errors.budget.message}</p>
-                )}
-              </div>
 
               {/* Message */}
               <div>

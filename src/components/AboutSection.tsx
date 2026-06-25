@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Award, Layers, MapPinned, Sparkles } from "lucide-react";
-import crewImage from "@/images/IMG_0777.jpg";
+import { Award, Layers, Sparkles } from "lucide-react";
+import crewImage from "@/Images21/Phacs/photo1.webp";
 
 const milestones = [
   {
@@ -18,10 +18,9 @@ const milestones = [
 ];
 
 const proof = [
-  { icon: Award, value: "10+", label: "Flagship launches per year" },
+  { icon: Award, value: "3+", label: "Years of experience" },
   { icon: Sparkles, value: "98%", label: "Projects on-time" },
   { icon: Layers, value: "Multi-crew", label: "Stage / film / web" },
-  { icon: MapPinned, value: "6 countries", label: "Delivered in region" },
 ];
 
 const AboutSection = () => {
@@ -53,16 +52,7 @@ const AboutSection = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/20 to-transparent" />
               <div className="absolute top-5 left-5 glass px-4 py-2 rounded-full text-xs uppercase tracking-[0.25em] text-muted-foreground">On-site ops</div>
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="absolute bottom-4 right-4 glass-strong rounded-2xl p-4"
-              >
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Crew</p>
-                <p className="text-lg font-display font-semibold">Directors, engineers, and storytellers in sync.</p>
-              </motion.div>
+
             </div>
           </motion.div>
 

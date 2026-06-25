@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/images/IMG_0272 - Copy.jpg";
+import heroImage from "@/Images21/hero section.webp";
 
 const capabilities = [
   { label: "Event solutions", href: "#services" },
