@@ -139,7 +139,7 @@ const HeroSection = () => {
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-lg md:text-xl text-muted-foreground max-w-2xl min-h-[70px]"
+              className="text-lg md:text-xl text-muted-foreground max-w-2xl min-h-[70px] mx-auto"
             >
               <AnimatePresence mode="wait">
                 <motion.span
