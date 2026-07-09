@@ -106,7 +106,7 @@ const ContactForm = () => {
                   label: "Phone",
                   value: "+251942888555\n+251911605758\n+251911345531",
                 },
-                { icon: Mail, label: "Email", value: "MAGNAPROMOTION@GMAIL.COM" },
+                { icon: Mail, label: "Email", value: "info@magnapromotion.com" },
               ].map((item, index) => (
                 <motion.div
                   key={item.label}

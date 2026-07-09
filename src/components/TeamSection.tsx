@@ -1,18 +1,40 @@
 import { motion } from "framer-motion";
-import ceoImage from "@/MAGNA TEAMS PHOTO/CEO.webp";
-import ctoImage from "@/MAGNA TEAMS PHOTO/CHIF OPERATING  OFFICER.webp";
+import ceoImage from "@/MAGNA TEAMS PHOTO/CEO.jpg";
+import cooImage from "@/MAGNA TEAMS PHOTO/CHIF OPERATING  OFFICER.webp";
+import creativeDirectorImage from "@/MAGNA TEAMS PHOTO/Creative Director.jpg";
+import eventCoordinatorImage from "@/MAGNA TEAMS PHOTO/Event coordinator.png";
+import salesPromotionImage from "@/MAGNA TEAMS PHOTO/Sales & promotion.jpg";
+
 const leaders = [
   {
-    name: "Yemane Yitbarek (owner)",
+    name: "Yemane Yitbarek",
     title: "CEO/CTO",
     focus: "Growth, partnerships, and market positioning across the region.",
     image: ceoImage,
   },
   {
-    name: "DANIEL ABAYNEH (owner)",
-    title: "COO (CHIEF OPERATING OFFICER)",
+    name: "Daniel Abayneh",
+    title: "COO (Chief Operating Officer)",
     focus: "Systems, broadcast pipelines, and on-site control innovation.",
-    image: ctoImage,
+    image: cooImage,
+  },
+  {
+    name: "Abraham Getachew",
+    title: "Creative Director",
+    focus: "Visual storytelling, creative direction, and brand aesthetics.",
+    image: creativeDirectorImage,
+  },
+  {
+    name: "Mihretab Meakele",
+    title: "Event Coordinator",
+    focus: "Logistics orchestration, vendor management, and seamless event execution.",
+    image: eventCoordinatorImage,
+  },
+  {
+    name: "Edom Araya",
+    title: "Sales & Promotion",
+    focus: "Client relations, partnership growth, and strategic promotional campaigns.",
+    image: salesPromotionImage,
   },
 ];
 
