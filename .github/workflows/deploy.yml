@@ -34,5 +34,5 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT || 22 }}
           local-dir: ./dist/
-          server-dir: ${{ secrets.SFTP_TARGET_DIR || 'domains/magnapromotion.com/public_html/' }}
+          server-dir: ${{ secrets.SFTP_TARGET_DIR || 'public_html/' }}
           dry-run: false
