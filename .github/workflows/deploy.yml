@@ -26,34 +26,13 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy via SFTP
-        env:
-          RAW_SERVER: ${{ secrets.SFTP_SERVER }}
-          RAW_USERNAME: ${{ secrets.SFTP_USERNAME }}
-          RAW_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
-          RAW_PORT: ${{ secrets.SFTP_PORT }}
-        run: |
-          SERVER=$(echo "${RAW_SERVER:-178.16.128.242}" | tr -d '\r\n ')
-          USERNAME=$(echo "$RAW_USERNAME" | tr -d '\r\n ')
-          PASSWORD=$(echo "$RAW_PASSWORD" | tr -d '\r\n')
-          PORT=$(echo "${RAW_PORT:-65002}" | tr -d '\r\n ')
-          if [ "$PORT" = "21" ] || [ -z "$PORT" ]; then
-            PORT="65002"
-          fi
-
-          sudo apt-get update
-          sudo apt-get install -y sshpass
-
-          echo "Connecting to $SERVER on port $PORT..."
-          sshpass -p "$PASSWORD" scp \
-            -P "$PORT" \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            -r dist/* \
-            "$USERNAME@$SERVER:domains/magnapromotion.com/public_html/" || \
-          sshpass -p "$PASSWORD" scp \
-            -P "$PORT" \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            -r dist/* \
-            "$USERNAME@$SERVER:public_html/"
+      - name: Deploy via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SFTP_SERVER }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT || 22 }}
+          source: "dist/*"
+          target: "domains/magnapromotion.com/public_html"
+          strip_components: 1
