@@ -27,7 +27,17 @@ jobs:
         run: npm run build
 
       - name: Deploy via LFTP
+        env:
+          FTP_USER: ${{ secrets.SFTP_USERNAME }}
+          FTP_PASS: ${{ secrets.SFTP_PASSWORD }}
+          FTP_HOST: ${{ secrets.SFTP_SERVER || '178.16.128.242' }}
         run: |
           sudo apt-get update -y
           sudo apt-get install lftp -y
-          lftp -c "set ftp:ssl-allow no; set net:timeout 10; set net:max-retries 3; open -u '${{ secrets.SFTP_USERNAME }}','${{ secrets.SFTP_PASSWORD }}' ftp://${{ secrets.SFTP_SERVER || '178.16.128.242' }}; mirror -Rnv ./dist/ ./ --parallel=10"
+          lftp -c "
+            set ftp:ssl-allow no; 
+            set net:timeout 10; 
+            set net:max-retries 3; 
+            open -u \"$FTP_USER\",\"$FTP_PASS\" ftp://$FTP_HOST; 
+            mirror -Rnv ./dist/ ./ --parallel=10
+          "
