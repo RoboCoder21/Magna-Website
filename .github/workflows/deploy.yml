@@ -26,13 +26,13 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy via SCP
-        uses: appleboy/scp-action@v0.1.7
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          host: ${{ secrets.SFTP_SERVER || '178.16.128.242' }}
+          server: ${{ secrets.SFTP_SERVER || '178.16.128.242' }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT || 65002 }}
-          source: "dist/*"
-          target: "public_html"
-          strip_components: 1
+          port: ${{ secrets.SFTP_PORT || 21 }}
+          local-dir: ./dist/
+          server-dir: ./
+          dry-run: false
