@@ -26,13 +26,14 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy via FTP/SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          protocol: ${{ secrets.SFTP_PROTOCOL || 'ftps' }}
-          port: ${{ secrets.SFTP_PORT || 21 }}
-          security: loose
-          server-dir: ${{ secrets.SFTP_TARGET_DIR || './' }}
+          port: ${{ secrets.SFTP_PORT || 22 }}
+          local_path: './dist/*'
+          remote_path: './'
+          sftp_only: true
+          sftpArgs: '-o StrictHostKeyChecking=no'
