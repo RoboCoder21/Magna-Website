@@ -31,6 +31,7 @@ jobs:
           FTP_USER: ${{ secrets.SFTP_USERNAME }}
           FTP_PASS: ${{ secrets.SFTP_PASSWORD }}
           FTP_HOST: ${{ secrets.SFTP_SERVER || '178.16.128.242' }}
+          FTP_TARGET: ${{ secrets.SFTP_TARGET_DIR || 'domains/magnapromotion.com/public_html/' }}
         run: |
           sudo apt-get update -y
           sudo apt-get install lftp -y
@@ -39,5 +40,5 @@ jobs:
             set net:timeout 10; 
             set net:max-retries 3; 
             open -u \"$FTP_USER\",\"$FTP_PASS\" ftp://$FTP_HOST; 
-            mirror -Rnv ./dist/ domains/magnapromotion.com/public_html/ --parallel=10
+            mirror -Rnv ./dist/ \"$FTP_TARGET\" --parallel=10
           "
