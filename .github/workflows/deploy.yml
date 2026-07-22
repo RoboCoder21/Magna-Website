@@ -26,16 +26,8 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.SFTP_SERVER || '178.16.128.242' }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT || 21 }}
-          local-dir: ./dist/
-          server-dir: ./
-          protocol: ftp
-          security: loose
-          timeout: 180000
-          dry-run: false
+      - name: Deploy via LFTP
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install lftp -y
+          lftp -c "set ftp:ssl-allow no; set net:timeout 10; set net:max-retries 3; open -u '${{ secrets.SFTP_USERNAME }}','${{ secrets.SFTP_PASSWORD }}' ftp://${{ secrets.SFTP_SERVER || '178.16.128.242' }}; mirror -Rnv ./dist/ ./ --parallel=10"
