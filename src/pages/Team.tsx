@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import altImage from "@/Images21/Africa Union/IMG_8050.webp";
-import ceoImage from "@/MAGNA TEAMS PHOTO/CEO.jpg";
+import ceoImage from "@/MAGNA TEAMS PHOTO/CEO.png";
 import cooImage from "@/MAGNA TEAMS PHOTO/CHIF OPERATING  OFFICER.webp";
 import creativeDirectorImage from "@/MAGNA TEAMS PHOTO/Creative Director.jpg";
 import eventCoordinatorImage from "@/MAGNA TEAMS PHOTO/Event coordinator.png";
