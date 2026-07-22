@@ -26,29 +26,13 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy via SFTP
-        env:
-          SFTP_SERVER: ${{ secrets.SFTP_SERVER }}
-          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
-          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
-          SFTP_PORT: ${{ secrets.SFTP_PORT }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y sshpass
-          PORT="${SFTP_PORT:-65002}"
-          if [ "$PORT" = "21" ] || [ -z "$PORT" ]; then
-            PORT="65002"
-          fi
-          echo "Connecting to $SFTP_SERVER on port $PORT as $SFTP_USERNAME..."
-          sshpass -p "$SFTP_PASSWORD" scp \
-            -P "$PORT" \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            -r dist/* \
-            "$SFTP_USERNAME@$SFTP_SERVER:domains/magnapromotion.com/public_html/" || \
-          sshpass -p "$SFTP_PASSWORD" scp \
-            -P "$PORT" \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            -r dist/* \
-            "$SFTP_USERNAME@$SFTP_SERVER:public_html/"
+      - name: Deploy via FTP/SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.SFTP_SERVER }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          protocol: ${{ secrets.SFTP_PROTOCOL || 'ftps' }}
+          port: ${{ secrets.SFTP_PORT || 21 }}
+          security: loose
+          server-dir: ${{ secrets.SFTP_TARGET_DIR || './' }}
