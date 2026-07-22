@@ -32,8 +32,9 @@ jobs:
           server: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT || 22 }}
-          protocol: sftp
+          port: ${{ secrets.SFTP_PORT || 21 }}
+          protocol: ftps
+          security: loose
           local-dir: ./dist/
           server-dir: domains/magnapromotion.com/public_html/
           dry-run: false
