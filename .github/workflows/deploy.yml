@@ -29,10 +29,11 @@ jobs:
       - name: Deploy via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          host: ${{ secrets.SFTP_SERVER }}
+          server: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT || 22 }}
           local_path: './dist/*'
           remote_path: '/domains/magnapromotion.com/public_html/'
+          sftp_only: true
           sftpArgs: '-o StrictHostKeyChecking=no'
