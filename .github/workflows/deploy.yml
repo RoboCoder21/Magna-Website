@@ -39,5 +39,5 @@ jobs:
             set net:timeout 10; 
             set net:max-retries 3; 
             open -u \"$FTP_USER\",\"$FTP_PASS\" ftp://$FTP_HOST; 
-            mirror -Rnv ./dist/ ./ --parallel=10
+            mirror -Rnv ./dist/ domains/magnapromotion.com/public_html/ --parallel=10
           "
