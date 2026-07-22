@@ -27,14 +27,12 @@ jobs:
         run: npm run build
 
       - name: Deploy via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          server: ${{ secrets.SFTP_SERVER }}
+          host: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT || 21 }}
-          protocol: ftps
-          security: loose
-          local-dir: ./dist/
-          server-dir: domains/magnapromotion.com/public_html/
-          dry-run: false
+          port: ${{ secrets.SFTP_PORT || 22 }}
+          local_path: './dist/*'
+          remote_path: '/domains/magnapromotion.com/public_html/'
+          sftpArgs: '-o StrictHostKeyChecking=no'
