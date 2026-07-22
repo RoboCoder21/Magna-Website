@@ -18,7 +18,6 @@ import sheger5 from "@/Images21/Sheger city/IMG_2897.webp";
 import sheger6 from "@/Images21/Sheger city/IMG_2898.webp";
 
 import dashin1 from "@/Images21/dashin beer/IMG_7089.webp";
-import dashin2 from "@/Images21/dashin beer/IMG_7089-2.webp";
 import dashin3 from "@/Images21/dashin beer/IMG_7103.webp";
 import dashin4 from "@/Images21/dashin beer/IMG_7128.webp";
 
@@ -53,7 +52,7 @@ const projects = [
     client: "Dashin Beer",
     category: "Corporate",
     image: dashin1,
-    gallery: [dashin1, dashin2, dashin3, dashin4],
+    gallery: [dashin1, dashin3, dashin4],
   },
 ];
 
