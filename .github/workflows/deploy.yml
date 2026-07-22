@@ -35,4 +35,7 @@ jobs:
           port: ${{ secrets.SFTP_PORT || 21 }}
           local-dir: ./dist/
           server-dir: ./
+          protocol: ftp
+          security: loose
+          timeout: 180000
           dry-run: false
