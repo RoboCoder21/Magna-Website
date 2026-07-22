@@ -32,7 +32,7 @@ jobs:
           server: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT || 22 }}
+          port: ${{ secrets.SFTP_PORT || 65002 }}
           local_path: './dist/*'
           remote_path: '/domains/magnapromotion.com/public_html/'
           sftp_only: true
