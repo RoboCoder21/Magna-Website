@@ -29,10 +29,10 @@ jobs:
       - name: Deploy via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SFTP_SERVER }}
+          host: ${{ secrets.SFTP_SERVER || '178.16.128.242' }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT || 22 }}
+          port: ${{ secrets.SFTP_PORT || 65002 }}
           source: "dist/*"
-          target: "domains/magnapromotion.com/public_html"
+          target: "public_html"
           strip_components: 1
