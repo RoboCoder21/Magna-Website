@@ -35,10 +35,20 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y sshpass
-          PORT="${SFTP_PORT:-22}"
+          PORT="${SFTP_PORT:-65002}"
+          if [ "$PORT" = "21" ] || [ -z "$PORT" ]; then
+            PORT="65002"
+          fi
+          echo "Connecting to $SFTP_SERVER on port $PORT as $SFTP_USERNAME..."
           sshpass -p "$SFTP_PASSWORD" scp \
             -P "$PORT" \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             -r dist/* \
-            "$SFTP_USERNAME@$SFTP_SERVER:domains/magnapromotion.com/public_html/"
+            "$SFTP_USERNAME@$SFTP_SERVER:domains/magnapromotion.com/public_html/" || \
+          sshpass -p "$SFTP_PASSWORD" scp \
+            -P "$PORT" \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -r dist/* \
+            "$SFTP_USERNAME@$SFTP_SERVER:public_html/"
