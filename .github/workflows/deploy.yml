@@ -35,11 +35,18 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y sshpass
-          PORT="${SFTP_PORT:-65002}"
-          SERVER="$(printf '%s' "$SFTP_SERVER" | tr -d '\r\n' | sed -E 's#^[a-zA-Z]+://##; s#/.*$##; s/:.*$##')"
+          PORT="$(printf '%s' "${SFTP_PORT:-65002}" | tr -d '\r\n ' )"
+          SERVER="$(printf '%s' "$SFTP_SERVER" | tr -d '\r\n' | sed -E 's#^[a-zA-Z]+://##; s#/.*$##; s/:.*$##; s/^[[:space:]]+//; s/[[:space:]]+$//')"
           if [ -z "$SERVER" ]; then
             echo "SFTP_SERVER is empty or invalid."
             exit 1
+          fi
+          if [ -z "$SFTP_USERNAME" ] || [ -z "$SFTP_PASSWORD" ]; then
+            echo "SFTP credentials are missing."
+            exit 1
+          fi
+          if ! printf '%s' "$PORT" | grep -Eq '^[0-9]+$'; then
+            PORT="65002"
           fi
           if [ "$PORT" = "21" ] || [ -z "$PORT" ]; then
             PORT="65002"
