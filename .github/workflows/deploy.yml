@@ -34,4 +34,4 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install lftp -y
-          lftp -c "set ftp:ssl-allow no; set net:timeout 10; set net:max-retries 3; open -u \"$FTP_USER\",\"$FTP_PASS\" ftp://$FTP_HOST; mirror -Rnv --parallel=10 ./dist/ domains/magnapromotion.com/public_html/;"
+          lftp -c "set ftp:ssl-allow no; set net:timeout 10; set net:max-retries 3; open -u \"$FTP_USER\",\"$FTP_PASS\" ftp://$FTP_HOST; mirror -Rnv --parallel=10 ./dist/ public_html/;"
