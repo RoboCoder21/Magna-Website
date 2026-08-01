@@ -1,0 +1,122 @@
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "pages"
+    label: "Page Content"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - file: "src/content/hero.json"
+        label: "Hero Section"
+        name: "hero"
+        fields:
+          - { label: "Hero Background Image", name: "heroImage", widget: "image" }
+          - { label: "Headline Phrases", name: "headlinePhrases", widget: "list", field: { label: "Phrase", name: "phrase", widget: "string" } }
+          - { label: "Subtext Phrases", name: "subtextPhrases", widget: "list", field: { label: "Phrase", name: "phrase", widget: "string" } }
+          - { label: "CTA Phrases", name: "ctaPhrases", widget: "list", field: { label: "Phrase", name: "phrase", widget: "string" } }
+          - label: "Capabilities Pills"
+            name: "capabilities"
+            widget: "list"
+            fields:
+              - { label: "Label", name: "label", widget: "string" }
+              - { label: "Link Target", name: "href", widget: "string" }
+
+      - file: "src/content/about.json"
+        label: "About Section"
+        name: "about"
+        fields:
+          - { label: "Badge Label", name: "badge", widget: "string" }
+          - { label: "Main Heading", name: "heading", widget: "string" }
+          - { label: "Description Paragraph", name: "description", widget: "text" }
+          - { label: "Crew Photo", name: "crewImage", widget: "image" }
+          - label: "Milestones"
+            name: "milestones"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Detail", name: "detail", widget: "text" }
+          - label: "Proof Metrics"
+            name: "proof"
+            widget: "list"
+            fields:
+              - { label: "Value", name: "value", widget: "string" }
+              - { label: "Label", name: "label", widget: "string" }
+
+      - file: "src/content/services.json"
+        label: "Services Section"
+        name: "services"
+        fields:
+          - label: "Services List"
+            name: "services"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+              - { label: "Meta Tags", name: "meta", widget: "string", required: false }
+              - { label: "Icon Keyword", name: "iconKey", widget: "select", options: ["Lightbulb", "CalendarRange", "Clapperboard", "Radio", "Layers", "Zap", "Workflow"], default: "Lightbulb" }
+
+      - file: "src/content/projects.json"
+        label: "Portfolio Projects"
+        name: "projects"
+        fields:
+          - label: "Projects List"
+            name: "projects"
+            widget: "list"
+            fields:
+              - { label: "Project Title", name: "title", widget: "string" }
+              - { label: "Client Name", name: "client", widget: "string" }
+              - { label: "Category", name: "category", widget: "string" }
+              - { label: "Cover Image", name: "image", widget: "image" }
+              - label: "Gallery Images"
+                name: "gallery"
+                widget: "list"
+                field: { label: "Image Path", name: "image", widget: "image" }
+
+      - file: "src/content/team.json"
+        label: "Team Leadership"
+        name: "team"
+        fields:
+          - label: "Leadership Team"
+            name: "leaders"
+            widget: "list"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Focus", name: "focus", widget: "text" }
+              - { label: "Photo", name: "image", widget: "image" }
+
+      - file: "src/content/clients.json"
+        label: "Client Logos"
+        name: "clients"
+        fields:
+          - label: "Clients List"
+            name: "clients"
+            widget: "list"
+            fields:
+              - { label: "Client Name", name: "name", widget: "string" }
+              - { label: "Logo Image", name: "logo", widget: "image" }
+
+      - file: "src/content/recommendations.json"
+        label: "Recommendation Letters"
+        name: "recommendations"
+        fields:
+          - label: "Letter Documents"
+            name: "recommendationLetters"
+            widget: "list"
+            field: { label: "Document Image", name: "image", widget: "image" }
+
+      - file: "src/content/contact.json"
+        label: "Contact Information"
+        name: "contact"
+        fields:
+          - { label: "Email Address", name: "email", widget: "string" }
+          - { label: "Phone Numbers (one per line)", name: "phones", widget: "text" }
+          - { label: "Location / Address", name: "location", widget: "string" }

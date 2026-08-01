@@ -3,10 +3,19 @@ import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion"
 import { Sparkles, Maximize2, X } from "lucide-react";
 import client1Image from "@/Images21/Client Commendation/client1_full.png";
 
-// Add more recommendation letter images to this array
-const recommendationLetters = [
+import recommendationsData from "@/content/recommendations.json";
+
+const defaultRecommendationLetters = [
   client1Image,
 ];
+
+const recommendationLetters = recommendationsData.recommendationLetters?.length
+  ? recommendationsData.recommendationLetters.map((item, index) => {
+      if (typeof item === "string" && item) return item;
+      if (typeof item === "object" && item.image) return item.image;
+      return defaultRecommendationLetters[index] || client1Image;
+    })
+  : defaultRecommendationLetters;
 
 const RecommendationSection = () => {
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);

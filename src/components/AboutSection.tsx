@@ -1,29 +1,38 @@
 import { motion } from "framer-motion";
 import { Award, Layers, Sparkles } from "lucide-react";
-import crewImage from "@/Images21/Phacs/photo1.webp";
+import defaultCrewImage from "@/Images21/Phacs/photo1.webp";
+import aboutData from "@/content/about.json";
 
-const milestones = [
-  {
-    title: "Built for shows and screens",
-    detail: "Production, film, and digital teams in one pipeline so every output feels consistent.",
-  },
-  {
-    title: "On the ground, anywhere",
-    detail: "Touring crews, scenic partners, and broadcast control built to travel.",
-  },
-  {
-    title: "Outcome obsessed",
-    detail: "We map success on audience impact—not just delivery checklists.",
-  },
-];
+const milestones = aboutData.milestones?.length
+  ? aboutData.milestones
+  : [
+      {
+        title: "Built for shows and screens",
+        detail: "Production, film, and digital teams in one pipeline so every output feels consistent.",
+      },
+      {
+        title: "On the ground, anywhere",
+        detail: "Touring crews, scenic partners, and broadcast control built to travel.",
+      },
+      {
+        title: "Outcome obsessed",
+        detail: "We map success on audience impact—not just delivery checklists.",
+      },
+    ];
 
 const proof = [
-  { icon: Award, value: "3+", label: "Years of experience" },
-  { icon: Sparkles, value: "98%", label: "Projects on-time" },
-  { icon: Layers, value: "Multi-crew", label: "Stage / film / web" },
+  { icon: Award, value: aboutData.proof?.[0]?.value || "3+", label: aboutData.proof?.[0]?.label || "Years of experience" },
+  { icon: Sparkles, value: aboutData.proof?.[1]?.value || "98%", label: aboutData.proof?.[1]?.label || "Projects on-time" },
+  { icon: Layers, value: aboutData.proof?.[2]?.value || "Multi-crew", label: aboutData.proof?.[2]?.label || "Stage / film / web" },
 ];
 
 const AboutSection = () => {
+  const crewImage = aboutData.crewImage || defaultCrewImage;
+  const badge = aboutData.badge || "About Magna";
+  const heading = aboutData.heading || "We engineer experiences that travel beyond the venue.";
+  const description =
+    aboutData.description ||
+    "Magna is an event and media company built on broadcast discipline. We combine creative direction, stagecraft, and post-production under one roof to keep momentum from idea to opening night and the content that follows.";
   return (
     <section
       id="about"
@@ -64,12 +73,12 @@ const AboutSection = () => {
             transition={{ duration: 0.6 }}
             className="lg:col-span-7 space-y-6"
           >
-            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-gold">About Magna</span>
+            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-gold">{badge}</span>
             <h2 className="text-4xl md:text-5xl font-display font-bold leading-tight">
-              We engineer experiences that travel beyond the venue.
+              {heading}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Magna is an event and media company built on broadcast discipline. We combine creative direction, stagecraft, and post-production under one roof to keep momentum from idea to opening night and the content that follows.
+              {description}
             </p>
 
             <div className="space-y-4">

@@ -5,7 +5,9 @@ import creativeDirectorImage from "@/MAGNA TEAMS PHOTO/Creative Director.jpg";
 import eventCoordinatorImage from "@/MAGNA TEAMS PHOTO/Event coordinator.png";
 import salesPromotionImage from "@/MAGNA TEAMS PHOTO/Sales & promotion.jpg";
 
-const leaders = [
+import teamData from "@/content/team.json";
+
+const defaultLeaders = [
   {
     name: "Yemane Yitbarek",
     title: "CEO/CTO",
@@ -37,6 +39,18 @@ const leaders = [
     image: salesPromotionImage,
   },
 ];
+
+const leaders = teamData.leaders?.length
+  ? teamData.leaders.map((leader, index) => {
+      const fallback = defaultLeaders[index] || defaultLeaders[0];
+      return {
+        name: leader.name || fallback.name,
+        title: leader.title || fallback.title,
+        focus: leader.focus || fallback.focus,
+        image: leader.image || fallback.image,
+      };
+    })
+  : defaultLeaders;
 
 const TeamSection = () => {
   return (

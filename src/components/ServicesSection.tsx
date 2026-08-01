@@ -9,7 +9,19 @@ import {
   Zap,
 } from "lucide-react";
 
-const services = [
+import servicesData from "@/content/services.json";
+
+const iconMap: Record<string, typeof Lightbulb> = {
+  Lightbulb,
+  CalendarRange,
+  Clapperboard,
+  Radio,
+  Layers,
+  Zap,
+  Workflow,
+};
+
+const defaultServices = [
   {
     icon: Lightbulb,
     title: "Creative & strategy",
@@ -52,13 +64,22 @@ const services = [
     description: "Editors, animators, and color working in lockstep with the show floor.",
     meta: "Edit bays / VFX / color",
   },
-    {
+  {
     icon: Workflow,
     title: "360 Degree Agency",
     description: "full-service marketing and communications firm that handles all aspects of a brand's strategy under one roof.",
- 
+    meta: "Marketing / PR / Brand Strategy",
   },
 ];
+
+const services = servicesData.services?.length
+  ? servicesData.services.map((item) => ({
+      icon: iconMap[item.iconKey || "Lightbulb"] || Lightbulb,
+      title: item.title,
+      description: item.description,
+      meta: item.meta || "",
+    }))
+  : defaultServices;
 
 const ServicesSection = () => {
   return (

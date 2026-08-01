@@ -2,28 +2,39 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/Images21/hero section.webp";
+import defaultHeroImage from "@/Images21/hero section.webp";
+import heroData from "@/content/hero.json";
 
-const capabilities = [
-  { label: "Event solutions", href: "#services" },
-  { label: "Audio / video", href: "#portfolio" },
-  { label: "Digital launches", href: "#portfolio" },
-  { label: "Experience strategy", href: "#about" },
-];
+const capabilities = heroData.capabilities?.length
+  ? heroData.capabilities
+  : [
+      { label: "Event solutions", href: "#services" },
+      { label: "Audio / video", href: "#portfolio" },
+      { label: "Digital launches", href: "#portfolio" },
+      { label: "Experience strategy", href: "#about" },
+    ];
 
-const headlinePhrases = [
-  "Launch bold moments.",
-  "Stage. Stream. Drop.",
-  "Make every cue land.",
-];
+const headlinePhrases = heroData.headlinePhrases?.length
+  ? heroData.headlinePhrases
+  : [
+      "Launch bold moments.",
+      "Stage. Stream. Drop.",
+      "Make every cue land.",
+    ];
 
-const subtextPhrases = [
-  "One crew for live, broadcast, and post—no hand-offs, no drift.",
-  "Concept to cue calls to the final export. Fast, aligned, done.",
-  "Stories that hit the room and the replay—on time, on brand.",
-];
+const subtextPhrases = heroData.subtextPhrases?.length
+  ? heroData.subtextPhrases
+  : [
+      "One crew for live, broadcast, and post—no hand-offs, no drift.",
+      "Concept to cue calls to the final export. Fast, aligned, done.",
+      "Stories that hit the room and the replay—on time, on brand.",
+    ];
 
-const ctaPhrases = ["Start a project", "Book a call", "Plan your launch"];
+const ctaPhrases = heroData.ctaPhrases?.length
+  ? heroData.ctaPhrases
+  : ["Start a project", "Book a call", "Plan your launch"];
+
+const heroImage = heroData.heroImage || defaultHeroImage;
 
 const headingVariants = {
   hidden: {},

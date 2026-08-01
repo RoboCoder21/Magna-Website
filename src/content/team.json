@@ -1,0 +1,34 @@
+{
+  "leaders": [
+    {
+      "name": "Yemane Yitbarek",
+      "title": "CEO/CTO",
+      "focus": "Growth, partnerships, and market positioning across the region.",
+      "image": ""
+    },
+    {
+      "name": "Daniel Abayneh",
+      "title": "COO (Chief Operating Officer)",
+      "focus": "Systems, broadcast pipelines, and on-site control innovation.",
+      "image": ""
+    },
+    {
+      "name": "Abraham Getachew",
+      "title": "Creative Director",
+      "focus": "Visual storytelling, creative direction, and brand aesthetics.",
+      "image": ""
+    },
+    {
+      "name": "Mihretab Meakele",
+      "title": "Event Coordinator",
+      "focus": "Logistics orchestration, vendor management, and seamless event execution.",
+      "image": ""
+    },
+    {
+      "name": "Edom Araya",
+      "title": "Sales & Promotion",
+      "focus": "Client relations, partnership growth, and strategic promotional campaigns.",
+      "image": ""
+    }
+  ]
+}

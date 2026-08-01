@@ -38,7 +38,12 @@ const eventTypes = [
 ];
 
 
+import contactData from "@/content/contact.json";
+
 const ContactForm = () => {
+  const contactAddress = contactData.location || "MESKEL FLOWER BEHIND DREAMLINER HOTEL JEMA BUILDING 6TH FLOOR";
+  const contactPhones = contactData.phones || "+251942888555\n+251911605758\n+251911345531";
+  const contactEmail = contactData.email || "info@magnapromotion.com";
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -99,14 +104,14 @@ const ContactForm = () => {
                 {
                   icon: MapPin,
                   label: "HQ",
-                  value: "MESKEL FLOWER BEHIND DREAMLINER HOTEL JEMA BUILDING 6TH FLOOR",
+                  value: contactAddress,
                 },
                 {
                   icon: Phone,
                   label: "Phone",
-                  value: "+251942888555\n+251911605758\n+251911345531",
+                  value: contactPhones,
                 },
-                { icon: Mail, label: "Email", value: "info@magnapromotion.com" },
+                { icon: Mail, label: "Email", value: contactEmail },
               ].map((item, index) => (
                 <motion.div
                   key={item.label}

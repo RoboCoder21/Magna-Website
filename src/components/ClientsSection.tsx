@@ -9,7 +9,9 @@ import jubilationLogo from "@/client logos/JUBILATION AFRICA.png";
 import agricultureLogo from "@/client logos/MINISTRY OF AGRICULTURE.png";
 import safaricomLogo from "@/client logos/SAFARICOM ETHIOPIA.png";
 
-const clients = [
+import clientsData from "@/content/clients.json";
+
+const defaultClients = [
   { name: "JUBILATION AFRICA", logo: jubilationLogo },
   { name: "ETHIO TELECOM", logo: ethioTelecomLogo },
   { name: "ETHIOPIAN PRESS AGENCY", logo: pressAgencyLogo },
@@ -18,6 +20,16 @@ const clients = [
   { name: "MINISTRY OF AGRICULTURE", logo: agricultureLogo },
   { name: "EMBASSY OF THE STATE OF KUWAIT", logo: embassyLogo },
 ];
+
+const clients = clientsData.clients?.length
+  ? clientsData.clients.map((client, index) => {
+      const fallback = defaultClients[index] || defaultClients[0];
+      return {
+        name: client.name || fallback.name,
+        logo: client.logo || fallback.logo,
+      };
+    })
+  : defaultClients;
 
 const ClientsSection = () => {
   const [logoRatios, setLogoRatios] = useState<Record<string, number>>({});

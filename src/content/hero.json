@@ -1,0 +1,24 @@
+{
+  "heroImage": "",
+  "headlinePhrases": [
+    "Launch bold moments.",
+    "Stage. Stream. Drop.",
+    "Make every cue land."
+  ],
+  "subtextPhrases": [
+    "One crew for live, broadcast, and post—no hand-offs, no drift.",
+    "Concept to cue calls to the final export. Fast, aligned, done.",
+    "Stories that hit the room and the replay—on time, on brand."
+  ],
+  "ctaPhrases": [
+    "Start a project",
+    "Book a call",
+    "Plan your launch"
+  ],
+  "capabilities": [
+    { "label": "Event solutions", "href": "#services" },
+    { "label": "Audio / video", "href": "#portfolio" },
+    { "label": "Digital launches", "href": "#portfolio" },
+    { "label": "Experience strategy", "href": "#about" }
+  ]
+}

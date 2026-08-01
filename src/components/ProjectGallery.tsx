@@ -21,7 +21,9 @@ import dashin1 from "@/Images21/dashin beer/IMG_7089.webp";
 import dashin3 from "@/Images21/dashin beer/IMG_7103.webp";
 import dashin4 from "@/Images21/dashin beer/IMG_7128.webp";
 
-const projects = [
+import projectsData from "@/content/projects.json";
+
+const defaultProjects = [
   {
     id: 1,
     title: "Africa Union",
@@ -55,6 +57,26 @@ const projects = [
     gallery: [dashin1, dashin3, dashin4],
   },
 ];
+
+const projects = projectsData.projects?.length
+  ? projectsData.projects.map((proj, index) => {
+      const fallback = defaultProjects[index] || defaultProjects[0];
+      const coverImage = proj.image || fallback.image;
+      const rawGallery = proj.gallery || [];
+      const galleryImages = rawGallery.length
+        ? rawGallery.map((item) => (typeof item === "string" ? item : item.image || item))
+        : fallback.gallery;
+
+      return {
+        id: proj.id || index + 1,
+        title: proj.title || fallback.title,
+        client: proj.client || fallback.client,
+        category: proj.category || fallback.category,
+        image: coverImage,
+        gallery: galleryImages,
+      };
+    })
+  : defaultProjects;
 
 const ProjectGallery = () => {
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
