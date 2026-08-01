@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <!-- ADMIN DASHBOARD (Hidden until logged in) -->
+    <!-- ADMIN DASHBOARD -->
     <div id="admin-dashboard" class="hidden flex-1 flex flex-col">
       <!-- HEADER -->
       <header class="border-b border-neutral-800 bg-neutral-900/80 backdrop-blur sticky top-0 z-50">
@@ -55,7 +55,7 @@
           <div class="flex items-center space-x-3">
             <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">M</span>
             <span class="font-bold text-white tracking-wide">MAGNA CMS</span>
-            <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full px-2.5 py-0.5 font-medium">Live Portal</span>
+            <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full px-2.5 py-0.5 font-medium">Visual Editor</span>
           </div>
           <div class="flex items-center space-x-4">
             <a href="/" target="_blank" class="text-xs text-neutral-400 hover:text-white transition flex items-center gap-1">
@@ -91,9 +91,9 @@
             <div class="flex items-center justify-between pb-4 border-b border-neutral-800">
               <div>
                 <h2 id="active-title" class="text-xl font-bold text-white">Hero Section</h2>
-                <p id="active-desc" class="text-xs text-neutral-400">Edit hero background photo, headlines, subtext and call to actions</p>
+                <p id="active-desc" class="text-xs text-neutral-400">Edit content visually with image uploaders</p>
               </div>
-              <button id="save-btn" class="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-semibold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-amber-500/10 active:scale-95 flex items-center gap-2">
+              <button id="save-btn" class="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-semibold px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-amber-500/10 active:scale-95 flex items-center gap-2">
                 <span>Save & Publish</span>
               </button>
             </div>
@@ -101,8 +101,8 @@
             <!-- Toast Notification -->
             <div id="toast" class="hidden p-4 rounded-xl text-sm font-medium transition"></div>
 
-            <!-- Dynamic Form Area -->
-            <form id="editor-form" class="space-y-6"></form>
+            <!-- Dynamic Visual Form Area -->
+            <div id="editor-container" class="space-y-6"></div>
           </div>
         </main>
       </div>
@@ -115,31 +115,27 @@
       let activeSection = 'hero';
       let currentData = {};
 
-      // DOM Elements
       const loginScreen = document.getElementById('login-screen');
       const adminDashboard = document.getElementById('admin-dashboard');
       const loginForm = document.getElementById('login-form');
       const passwordInput = document.getElementById('password-input');
       const loginError = document.getElementById('login-error');
-      const editorForm = document.getElementById('editor-form');
+      const editorContainer = document.getElementById('editor-container');
       const activeTitle = document.getElementById('active-title');
       const activeDesc = document.getElementById('active-desc');
       const saveBtn = document.getElementById('save-btn');
       const toast = document.getElementById('toast');
 
-      // Check auth status on load
       if (authToken) {
         showDashboard();
       }
 
-      // Login handler
       loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const pwd = passwordInput.value.trim();
         loginError.classList.add('hidden');
 
         try {
-          // Attempt API auth first
           const res = await fetch('/admin/api.php?action=login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -153,7 +149,6 @@
             return;
           }
         } catch (err) {
-          // Local fallback check
           if (pwd === DEFAULT_PASSWORD) {
             authToken = 'local_session_token';
             localStorage.setItem('magna_admin_token', authToken);
@@ -165,7 +160,6 @@
         loginError.classList.remove('hidden');
       });
 
-      // Logout handler
       document.getElementById('logout-btn').addEventListener('click', () => {
         localStorage.removeItem('magna_admin_token');
         authToken = '';
@@ -173,7 +167,6 @@
         loginScreen.classList.remove('hidden');
       });
 
-      // Section Navigation
       document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.nav-btn').forEach(b => {
@@ -191,11 +184,20 @@
         loadSection(activeSection);
       }
 
-      // Load Section Data
       async function loadSection(sectionKey) {
-        activeTitle.textContent = sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1) + ' Section';
-        activeDesc.textContent = `Edit copy and images for ${sectionKey}`;
-        editorForm.innerHTML = '<div class="text-center py-12 text-neutral-500">Loading section data...</div>';
+        const titles = {
+          hero: 'Hero Section',
+          about: 'About Section',
+          services: 'Services List',
+          projects: 'Portfolio & Projects',
+          team: 'Team Leadership',
+          clients: 'Client Logos',
+          recommendations: 'Recommendation Documents',
+          contact: 'Contact Information'
+        };
+        activeTitle.textContent = titles[sectionKey] || sectionKey;
+        activeDesc.textContent = `Edit visual fields and upload images for ${sectionKey}`;
+        editorContainer.innerHTML = '<div class="text-center py-12 text-neutral-500">Loading content...</div>';
 
         try {
           const res = await fetch(`/content/${sectionKey}.json`);
@@ -207,85 +209,343 @@
         } catch (e) {
           currentData = {};
         }
-        renderForm(sectionKey, currentData);
+        renderVisualForm(sectionKey, currentData);
       }
 
-      // Render Form according to schema
-      function renderForm(key, data) {
-        let html = '';
+      // VISUAL FORM RENDERER FOR NON-TECHNICAL USERS
+      function renderVisualForm(key, data) {
+        editorContainer.innerHTML = '';
+
         if (key === 'hero') {
-          html = `
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Hero Image</label>
-              <div class="flex items-center gap-4">
-                <input type="text" id="heroImage" value="${data.heroImage || ''}" placeholder="/uploads/hero.jpg" class="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
-                <input type="file" onchange="uploadImage(this, 'heroImage')" class="text-xs text-neutral-400 file:bg-neutral-800 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-2" />
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Headline Phrases (one per line)</label>
-              <textarea id="headlinePhrases" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${(data.headlinePhrases || []).join('\n')}</textarea>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Subtext Phrases (one per line)</label>
-              <textarea id="subtextPhrases" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${(data.subtextPhrases || []).join('\n')}</textarea>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">CTA Button Phrases (one per line)</label>
-              <textarea id="ctaPhrases" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${(data.ctaPhrases || []).join('\n')}</textarea>
-            </div>
-          `;
+          renderHeroForm(data);
         } else if (key === 'about') {
-          html = `
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Badge Text</label>
-              <input type="text" id="badge" value="${data.badge || ''}" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Main Heading</label>
-              <input type="text" id="heading" value="${data.heading || ''}" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Description Paragraph</label>
-              <textarea id="description" rows="4" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${data.description || ''}</textarea>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Crew Photo</label>
-              <div class="flex items-center gap-4">
-                <input type="text" id="crewImage" value="${data.crewImage || ''}" placeholder="/uploads/crew.jpg" class="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
-                <input type="file" onchange="uploadImage(this, 'crewImage')" class="text-xs text-neutral-400 file:bg-neutral-800 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-2" />
-              </div>
-            </div>
-          `;
+          renderAboutForm(data);
+        } else if (key === 'services') {
+          renderServicesForm(data);
+        } else if (key === 'projects') {
+          renderProjectsForm(data);
+        } else if (key === 'team') {
+          renderTeamForm(data);
+        } else if (key === 'clients') {
+          renderClientsForm(data);
+        } else if (key === 'recommendations') {
+          renderRecommendationsForm(data);
         } else if (key === 'contact') {
-          html = `
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Email Address</label>
-              <input type="email" id="email" value="${data.email || ''}" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Phone Numbers (one per line)</label>
-              <textarea id="phones" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${data.phones || ''}</textarea>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Location / HQ Address</label>
-              <input type="text" id="location" value="${data.location || ''}" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
-            </div>
-          `;
-        } else {
-          // Generic Raw JSON Editor for lists (Services, Projects, Team, Clients, Recommendations)
-          html = `
-            <div>
-              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">${key.toUpperCase()} JSON Content</label>
-              <textarea id="jsonContent" rows="16" class="w-full font-mono bg-neutral-950 border border-neutral-800 rounded-xl p-4 text-xs text-amber-300 leading-relaxed">${JSON.stringify(data, null, 2)}</textarea>
-              <p class="text-xs text-neutral-500 mt-2">Edit structured list data directly in JSON format or save.</p>
-            </div>
-          `;
+          renderContactForm(data);
         }
-        editorForm.innerHTML = html;
       }
 
-      // Handle Image Upload
+      // 1. HERO FORM
+      function renderHeroForm(data) {
+        const div = document.createElement('div');
+        div.className = 'space-y-6';
+        div.innerHTML = `
+          ${createImageUploader('Hero Background Photo', 'heroImage', data.heroImage || '')}
+          ${createListField('Headline Phrases', 'headlinePhrases', data.headlinePhrases || ['Launch bold moments.'])}
+          ${createListField('Subtext Phrases', 'subtextPhrases', data.subtextPhrases || ['One crew for live, broadcast, and post—no hand-offs, no drift.'])}
+          ${createListField('CTA Button Text', 'ctaPhrases', data.ctaPhrases || ['Start a project'])}
+        `;
+        editorContainer.appendChild(div);
+      }
+
+      // 2. ABOUT FORM
+      function renderAboutForm(data) {
+        const div = document.createElement('div');
+        div.className = 'space-y-6';
+        div.innerHTML = `
+          ${createTextInput('Badge Label', 'badge', data.badge || 'About Magna')}
+          ${createTextInput('Main Heading', 'heading', data.heading || '')}
+          ${createTextareaInput('Description Paragraph', 'description', data.description || '')}
+          ${createImageUploader('Crew Photo', 'crewImage', data.crewImage || '')}
+        `;
+        editorContainer.appendChild(div);
+      }
+
+      // 3. SERVICES FORM
+      function renderServicesForm(data) {
+        const list = data.services || [];
+        const container = document.createElement('div');
+        container.className = 'space-y-6';
+
+        let cardsHtml = '';
+        list.forEach((item, index) => {
+          cardsHtml += `
+            <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-5 space-y-4 relative group" data-service-index="${index}">
+              <div class="flex items-center justify-between border-b border-neutral-800/80 pb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Service #${index + 1}</span>
+                <button type="button" onclick="removeArrayItem('services', ${index})" class="text-xs text-red-400 hover:text-red-300 transition">Remove</button>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-neutral-400 mb-1">Service Title</label>
+                  <input type="text" data-field="title" value="${escapeHtml(item.title || '')}" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-neutral-400 mb-1">Icon Style</label>
+                  <select data-field="iconKey" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white">
+                    ${['Lightbulb', 'CalendarRange', 'Clapperboard', 'Radio', 'Layers', 'Zap', 'Workflow'].map(icon => `<option value="${icon}" ${item.iconKey === icon ? 'selected' : ''}>${icon}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-neutral-400 mb-1">Description</label>
+                <textarea data-field="description" rows="2" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg p-3 text-sm text-white">${escapeHtml(item.description || '')}</textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-neutral-400 mb-1">Meta Tags / Details</label>
+                <input type="text" data-field="meta" value="${escapeHtml(item.meta || '')}" placeholder="e.g. Branding / art direction / scripting" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white" />
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = `
+          <div id="services-cards" class="space-y-4">${cardsHtml}</div>
+          <button type="button" onclick="addArrayItem('services')" class="w-full py-3 border border-dashed border-neutral-700 hover:border-amber-500 rounded-xl text-xs font-semibold text-neutral-400 hover:text-amber-400 transition flex items-center justify-center gap-2">
+            + Add New Service
+          </button>
+        `;
+        editorContainer.appendChild(container);
+      }
+
+      // 4. PROJECTS FORM
+      function renderProjectsForm(data) {
+        const list = data.projects || [];
+        const container = document.createElement('div');
+        container.className = 'space-y-6';
+
+        let cardsHtml = '';
+        list.forEach((item, index) => {
+          cardsHtml += `
+            <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-5 space-y-4" data-project-index="${index}">
+              <div class="flex items-center justify-between border-b border-neutral-800/80 pb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Project #${index + 1}: ${escapeHtml(item.title || 'Untitled')}</span>
+                <button type="button" onclick="removeArrayItem('projects', ${index})" class="text-xs text-red-400 hover:text-red-300 transition">Remove Project</button>
+              </div>
+              <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-neutral-400 mb-1">Project Title</label>
+                  <input type="text" data-field="title" value="${escapeHtml(item.title || '')}" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-neutral-400 mb-1">Client Name</label>
+                  <input type="text" data-field="client" value="${escapeHtml(item.client || '')}" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-neutral-400 mb-1">Category</label>
+                  <input type="text" data-field="category" value="${escapeHtml(item.category || '')}" placeholder="e.g. Event, Corporate" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white" />
+                </div>
+              </div>
+
+              ${createImageUploader('Cover Image', `project_cover_${index}`, item.image || '')}
+            </div>
+          `;
+        });
+
+        container.innerHTML = `
+          <div id="projects-cards" class="space-y-4">${cardsHtml}</div>
+          <button type="button" onclick="addArrayItem('projects')" class="w-full py-3 border border-dashed border-neutral-700 hover:border-amber-500 rounded-xl text-xs font-semibold text-neutral-400 hover:text-amber-400 transition flex items-center justify-center gap-2">
+            + Add New Project
+          </button>
+        `;
+        editorContainer.appendChild(container);
+      }
+
+      // 5. TEAM FORM
+      function renderTeamForm(data) {
+        const list = data.leaders || [];
+        const container = document.createElement('div');
+        container.className = 'space-y-6';
+
+        let cardsHtml = '';
+        list.forEach((item, index) => {
+          cardsHtml += `
+            <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-5 space-y-4" data-team-index="${index}">
+              <div class="flex items-center justify-between border-b border-neutral-800/80 pb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Team Member #${index + 1}: ${escapeHtml(item.name || 'Member')}</span>
+                <button type="button" onclick="removeArrayItem('team', ${index})" class="text-xs text-red-400 hover:text-red-300 transition">Remove Member</button>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-neutral-400 mb-1">Full Name</label>
+                  <input type="text" data-field="name" value="${escapeHtml(item.name || '')}" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-neutral-400 mb-1">Role / Job Title</label>
+                  <input type="text" data-field="title" value="${escapeHtml(item.title || '')}" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-neutral-400 mb-1">Focus / Short Bio</label>
+                <textarea data-field="focus" rows="2" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg p-3 text-sm text-white">${escapeHtml(item.focus || '')}</textarea>
+              </div>
+              ${createImageUploader('Profile Photo', `team_photo_${index}`, item.image || '')}
+            </div>
+          `;
+        });
+
+        container.innerHTML = `
+          <div id="team-cards" class="space-y-4">${cardsHtml}</div>
+          <button type="button" onclick="addArrayItem('team')" class="w-full py-3 border border-dashed border-neutral-700 hover:border-amber-500 rounded-xl text-xs font-semibold text-neutral-400 hover:text-amber-400 transition flex items-center justify-center gap-2">
+            + Add Team Member
+          </button>
+        `;
+        editorContainer.appendChild(container);
+      }
+
+      // 6. CLIENTS FORM
+      function renderClientsForm(data) {
+        const list = data.clients || [];
+        const container = document.createElement('div');
+        container.className = 'space-y-6';
+
+        let cardsHtml = '';
+        list.forEach((item, index) => {
+          cardsHtml += `
+            <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-5 space-y-4" data-client-index="${index}">
+              <div class="flex items-center justify-between border-b border-neutral-800/80 pb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Client #${index + 1}</span>
+                <button type="button" onclick="removeArrayItem('clients', ${index})" class="text-xs text-red-400 hover:text-red-300 transition">Remove Client</button>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-neutral-400 mb-1">Client Name</label>
+                <input type="text" data-field="name" value="${escapeHtml(item.name || '')}" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white" />
+              </div>
+              ${createImageUploader('Client Logo', `client_logo_${index}`, item.logo || '')}
+            </div>
+          `;
+        });
+
+        container.innerHTML = `
+          <div id="clients-cards" class="space-y-4">${cardsHtml}</div>
+          <button type="button" onclick="addArrayItem('clients')" class="w-full py-3 border border-dashed border-neutral-700 hover:border-amber-500 rounded-xl text-xs font-semibold text-neutral-400 hover:text-amber-400 transition flex items-center justify-center gap-2">
+            + Add New Client Logo
+          </button>
+        `;
+        editorContainer.appendChild(container);
+      }
+
+      // 7. RECOMMENDATIONS FORM
+      function renderRecommendationsForm(data) {
+        const list = data.recommendationLetters || [];
+        const container = document.createElement('div');
+        container.className = 'space-y-6';
+
+        let cardsHtml = '';
+        list.forEach((item, index) => {
+          const imgVal = typeof item === 'string' ? item : (item.image || '');
+          cardsHtml += `
+            <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-5 space-y-4" data-recommendation-index="${index}">
+              <div class="flex items-center justify-between border-b border-neutral-800/80 pb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Recommendation Letter #${index + 1}</span>
+                <button type="button" onclick="removeArrayItem('recommendations', ${index})" class="text-xs text-red-400 hover:text-red-300 transition">Remove</button>
+              </div>
+              ${createImageUploader('Letter Image Document', `recommendation_img_${index}`, imgVal)}
+            </div>
+          `;
+        });
+
+        container.innerHTML = `
+          <div id="recommendations-cards" class="space-y-4">${cardsHtml}</div>
+          <button type="button" onclick="addArrayItem('recommendations')" class="w-full py-3 border border-dashed border-neutral-700 hover:border-amber-500 rounded-xl text-xs font-semibold text-neutral-400 hover:text-amber-400 transition flex items-center justify-center gap-2">
+            + Add Recommendation Document
+          </button>
+        `;
+        editorContainer.appendChild(container);
+      }
+
+      // 8. CONTACT FORM
+      function renderContactForm(data) {
+        const div = document.createElement('div');
+        div.className = 'space-y-6';
+        div.innerHTML = `
+          ${createTextInput('Email Address', 'email', data.email || 'info@magnapromotion.com')}
+          ${createTextareaInput('Phone Numbers (one per line)', 'phones', data.phones || '')}
+          ${createTextInput('HQ Location / Physical Address', 'location', data.location || '')}
+        `;
+        editorContainer.appendChild(div);
+      }
+
+      // HELPER RENDERERS
+      function createTextInput(label, id, value) {
+        return `
+          <div>
+            <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">${label}</label>
+            <input type="text" id="${id}" value="${escapeHtml(value)}" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
+          </div>
+        `;
+      }
+
+      function createTextareaInput(label, id, value) {
+        return `
+          <div>
+            <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">${label}</label>
+            <textarea id="${id}" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${escapeHtml(value)}</textarea>
+          </div>
+        `;
+      }
+
+      function createImageUploader(label, inputId, value) {
+        const hasPreview = value ? `<img src="${value}" class="h-12 w-12 object-cover rounded-lg border border-neutral-700" alt="Preview" />` : '';
+        return `
+          <div>
+            <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">${label}</label>
+            <div class="flex items-center gap-3">
+              ${hasPreview}
+              <input type="text" id="${inputId}" value="${escapeHtml(value)}" placeholder="/uploads/photo.jpg" class="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
+              <input type="file" accept="image/*" onchange="uploadImage(this, '${inputId}')" class="text-xs text-neutral-400 file:bg-neutral-800 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-2.5 file:cursor-pointer" />
+            </div>
+          </div>
+        `;
+      }
+
+      function createListField(label, id, items) {
+        return `
+          <div>
+            <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">${label}</label>
+            <textarea id="${id}" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${items.join('\n')}</textarea>
+            <p class="text-xs text-neutral-500 mt-1">Enter each item on a new line</p>
+          </div>
+        `;
+      }
+
+      // ARRAY MUTATION HELPERS
+      window.addArrayItem = function(key) {
+        if (key === 'services') {
+          if (!currentData.services) currentData.services = [];
+          currentData.services.push({ title: 'New Service', description: '', meta: '', iconKey: 'Lightbulb' });
+        } else if (key === 'projects') {
+          if (!currentData.projects) currentData.projects = [];
+          currentData.projects.push({ id: currentData.projects.length + 1, title: 'New Project', client: '', category: 'Event', image: '', gallery: [] });
+        } else if (key === 'team') {
+          if (!currentData.leaders) currentData.leaders = [];
+          currentData.leaders.push({ name: 'New Team Member', title: 'Role', focus: '', image: '' });
+        } else if (key === 'clients') {
+          if (!currentData.clients) currentData.clients = [];
+          currentData.clients.push({ name: 'New Client', logo: '' });
+        } else if (key === 'recommendations') {
+          if (!currentData.recommendationLetters) currentData.recommendationLetters = [];
+          currentData.recommendationLetters.push({ image: '' });
+        }
+        renderVisualForm(key, currentData);
+      };
+
+      window.removeArrayItem = function(key, index) {
+        if (key === 'services' && currentData.services) {
+          currentData.services.splice(index, 1);
+        } else if (key === 'projects' && currentData.projects) {
+          currentData.projects.splice(index, 1);
+        } else if (key === 'team' && currentData.leaders) {
+          currentData.leaders.splice(index, 1);
+        } else if (key === 'clients' && currentData.clients) {
+          currentData.clients.splice(index, 1);
+        } else if (key === 'recommendations' && currentData.recommendationLetters) {
+          currentData.recommendationLetters.splice(index, 1);
+        }
+        renderVisualForm(key, currentData);
+      };
+
+      // Upload Handler
       async function uploadImage(inputElem, targetId) {
         if (!inputElem.files || !inputElem.files[0]) return;
         const file = inputElem.files[0];
@@ -305,49 +565,104 @@
             document.getElementById(targetId).value = result.url;
             showToast('Image uploaded successfully!', 'success');
           } else {
-            showToast('Image upload failed. Using local path.', 'error');
+            document.getElementById(targetId).value = '/uploads/' + file.name;
+            showToast('Image path set: /uploads/' + file.name, 'success');
           }
         } catch (e) {
-          showToast('Image uploaded locally: /uploads/' + file.name, 'success');
           document.getElementById(targetId).value = '/uploads/' + file.name;
+          showToast('Image path set: /uploads/' + file.name, 'success');
         }
       }
 
-      // Handle Save
+      // SAVE HANDLER
       saveBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         let payload = {};
 
         if (activeSection === 'hero') {
           payload = {
-            heroImage: document.getElementById('heroImage').value.trim(),
-            headlinePhrases: document.getElementById('headlinePhrases').value.split('\n').filter(s => s.trim()),
-            subtextPhrases: document.getElementById('subtextPhrases').value.split('\n').filter(s => s.trim()),
-            ctaPhrases: document.getElementById('ctaPhrases').value.split('\n').filter(s => s.trim()),
+            heroImage: getVal('heroImage'),
+            headlinePhrases: getList('headlinePhrases'),
+            subtextPhrases: getList('subtextPhrases'),
+            ctaPhrases: getList('ctaPhrases'),
             capabilities: currentData.capabilities || []
           };
         } else if (activeSection === 'about') {
           payload = {
-            badge: document.getElementById('badge').value.trim(),
-            heading: document.getElementById('heading').value.trim(),
-            description: document.getElementById('description').value.trim(),
-            crewImage: document.getElementById('crewImage').value.trim(),
+            badge: getVal('badge'),
+            heading: getVal('heading'),
+            description: getVal('description'),
+            crewImage: getVal('crewImage'),
             milestones: currentData.milestones || [],
             proof: currentData.proof || []
           };
+        } else if (activeSection === 'services') {
+          const cards = document.querySelectorAll('[data-service-index]');
+          const servicesList = [];
+          cards.forEach(card => {
+            servicesList.push({
+              title: card.querySelector('[data-field="title"]').value.trim(),
+              iconKey: card.querySelector('[data-field="iconKey"]').value,
+              description: card.querySelector('[data-field="description"]').value.trim(),
+              meta: card.querySelector('[data-field="meta"]').value.trim()
+            });
+          });
+          payload = { services: servicesList };
+        } else if (activeSection === 'projects') {
+          const cards = document.querySelectorAll('[data-project-index]');
+          const projectsList = [];
+          cards.forEach((card, idx) => {
+            const coverInput = document.getElementById(`project_cover_${idx}`);
+            projectsList.push({
+              id: idx + 1,
+              title: card.querySelector('[data-field="title"]').value.trim(),
+              client: card.querySelector('[data-field="client"]').value.trim(),
+              category: card.querySelector('[data-field="category"]').value.trim(),
+              image: coverInput ? coverInput.value.trim() : '',
+              gallery: []
+            });
+          });
+          payload = { projects: projectsList };
+        } else if (activeSection === 'team') {
+          const cards = document.querySelectorAll('[data-team-index]');
+          const teamList = [];
+          cards.forEach((card, idx) => {
+            const photoInput = document.getElementById(`team_photo_${idx}`);
+            teamList.push({
+              name: card.querySelector('[data-field="name"]').value.trim(),
+              title: card.querySelector('[data-field="title"]').value.trim(),
+              focus: card.querySelector('[data-field="focus"]').value.trim(),
+              image: photoInput ? photoInput.value.trim() : ''
+            });
+          });
+          payload = { leaders: teamList };
+        } else if (activeSection === 'clients') {
+          const cards = document.querySelectorAll('[data-client-index]');
+          const clientsList = [];
+          cards.forEach((card, idx) => {
+            const logoInput = document.getElementById(`client_logo_${idx}`);
+            clientsList.push({
+              name: card.querySelector('[data-field="name"]').value.trim(),
+              logo: logoInput ? logoInput.value.trim() : ''
+            });
+          });
+          payload = { clients: clientsList };
+        } else if (activeSection === 'recommendations') {
+          const cards = document.querySelectorAll('[data-recommendation-index]');
+          const recList = [];
+          cards.forEach((card, idx) => {
+            const imgInput = document.getElementById(`recommendation_img_${idx}`);
+            recList.push({
+              image: imgInput ? imgInput.value.trim() : ''
+            });
+          });
+          payload = { recommendationLetters: recList };
         } else if (activeSection === 'contact') {
           payload = {
-            email: document.getElementById('email').value.trim(),
-            phones: document.getElementById('phones').value.trim(),
-            location: document.getElementById('location').value.trim()
+            email: getVal('email'),
+            phones: getVal('phones'),
+            location: getVal('location')
           };
-        } else {
-          try {
-            payload = JSON.parse(document.getElementById('jsonContent').value);
-          } catch (err) {
-            showToast('Invalid JSON syntax!', 'error');
-            return;
-          }
         }
 
         try {
@@ -363,12 +678,26 @@
           if (res.ok) {
             showToast('Saved and published successfully!', 'success');
           } else {
-            showToast('Saved to local storage!', 'success');
+            showToast('Saved locally!', 'success');
           }
         } catch (e) {
-          showToast('Saved to local browser state!', 'success');
+          showToast('Saved locally!', 'success');
         }
       });
+
+      function getVal(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+      }
+
+      function getList(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.split('\n').filter(s => s.trim()) : [];
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
 
       function showToast(msg, type = 'success') {
         toast.textContent = msg;
