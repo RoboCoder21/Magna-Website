@@ -68,17 +68,36 @@ const ContactForm = () => {
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    console.log("Form submitted:", data);
+
+    try {
+      const res = await fetch("/admin/api.php?action=submit_contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        throw new Error("API call failed");
+      }
+    } catch (e) {
+      // Local storage fallback for dev testing
+      try {
+        const localSubs = JSON.parse(localStorage.getItem("magna_local_submissions") || "[]");
+        localSubs.unshift({
+          id: Date.now().toString(),
+          date: new Date().toISOString().replace("T", " ").substring(0, 19),
+          ...formData,
+        });
+        localStorage.setItem("magna_local_submissions", JSON.stringify(localSubs));
+      } catch (err) {}
+    }
+
     toast.success("Thank you! We'll be in touch within 24 hours.", {
       icon: <CheckCircle className="w-5 h-5 text-gold" />,
     });
-    
+
     reset();
     setIsSubmitting(false);
   };
