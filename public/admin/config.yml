@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: RoboCoder21/Magna-Website
   branch: main
 
 local_backend: true
