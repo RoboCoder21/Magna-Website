@@ -8,6 +8,15 @@ import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
 import Showcase from "@/pages/Showcase";
 
+import { useEffect } from "react";
+
+const AdminRedirect = () => {
+  useEffect(() => {
+    window.location.href = "/admin/index.html";
+  }, []);
+  return null;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -20,6 +29,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/showcase" element={<Showcase />} />
+          <Route path="/admin" element={<AdminRedirect />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -10,7 +10,21 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   assetsInclude: ["**/*.PNG"],
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    {
+      name: "admin-rewrite",
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url === "/admin" || req.url === "/admin/") {
+            req.url = "/admin/index.html";
+          }
+          next();
+        });
+      },
+    },
+    react(),
+    mode === "development" && componentTagger(),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
