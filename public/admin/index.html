@@ -196,7 +196,7 @@
       async function updateSubmissionsBadge() {
         let subs = [];
         try {
-          const res = await fetch('/content/submissions.json');
+          const res = await fetch('/content/submissions.json?t=' + Date.now());
           if (res.ok) subs = await res.json();
         } catch (e) {
           subs = JSON.parse(localStorage.getItem('magna_local_submissions') || '[]');
@@ -222,7 +222,7 @@
         editorContainer.innerHTML = '<div class="text-center py-12 text-neutral-500">Loading content...</div>';
 
         try {
-          const res = await fetch(`/content/${sectionKey}.json`);
+          const res = await fetch(`/content/${sectionKey}.json?t=` + Date.now());
           if (res.ok) {
             currentData = await res.json();
           } else {

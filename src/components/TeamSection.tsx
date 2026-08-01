@@ -46,7 +46,7 @@ const TeamSection = () => {
   const [data, setData] = useState(() => teamData);
 
   useEffect(() => {
-    fetch("/content/team.json")
+    fetch("/content/team.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
         if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));

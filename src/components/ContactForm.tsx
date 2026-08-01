@@ -45,7 +45,7 @@ const ContactForm = () => {
   const [data, setData] = useState(() => contactData);
 
   useEffect(() => {
-    fetch("/content/contact.json")
+    fetch("/content/contact.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
         if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));

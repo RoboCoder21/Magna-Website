@@ -74,7 +74,7 @@ const HeroSection = () => {
   const [ctaIndex, setCtaIndex] = useState(0);
 
   useEffect(() => {
-    fetch("/content/hero.json")
+    fetch("/content/hero.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
         if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));

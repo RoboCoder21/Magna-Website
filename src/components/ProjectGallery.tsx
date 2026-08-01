@@ -66,7 +66,7 @@ const ProjectGallery = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    fetch("/content/projects.json")
+    fetch("/content/projects.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
         if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));

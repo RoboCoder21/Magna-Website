@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: application/json');
+header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
@@ -53,7 +54,7 @@ if ($action === 'submit_contact') {
 
     $target_dir = __DIR__ . '/../content/';
     if (!file_exists($target_dir)) {
-        mkdir($target_dir, 0755, true);
+        @mkdir($target_dir, 0777, true);
     }
 
     $target_file = $target_dir . 'submissions.json';
@@ -78,7 +79,7 @@ if ($action === 'submit_contact') {
     array_unshift($submissions, $new_entry);
 
     if (file_put_contents($target_file, json_encode($submissions, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) !== false) {
-        // Optionally send email notification to host email
+        @chmod($target_file, 0666);
         @mail('info@magnapromotion.com', "New Contact Form Submission: $name", "Name: $name\nEmail: $email\nPhone: $phone\nEvent Type: $eventType\n\nMessage:\n$message");
         
         echo json_encode(['success' => true, 'message' => 'Contact inquiry saved successfully']);
@@ -113,13 +114,14 @@ if ($action === 'save_content') {
 
     $target_dir = __DIR__ . '/../content/';
     if (!file_exists($target_dir)) {
-        mkdir($target_dir, 0755, true);
+        @mkdir($target_dir, 0777, true);
     }
 
     $target_file = $target_dir . $file_key . '.json';
     $json_data = is_string($content) ? $content : json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
     if (file_put_contents($target_file, $json_data) !== false) {
+        @chmod($target_file, 0666);
         echo json_encode(['success' => true, 'message' => "Saved $file_key.json successfully"]);
     } else {
         http_response_code(500);
@@ -139,6 +141,7 @@ if ($action === 'delete_submission') {
                 return isset($item['id']) && $item['id'] !== $sub_id;
             }));
             file_put_contents($target_file, json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            @chmod($target_file, 0666);
         }
     }
     echo json_encode(['success' => true, 'message' => 'Submission deleted']);
@@ -155,7 +158,7 @@ if ($action === 'upload_image') {
 
     $uploads_dir = __DIR__ . '/../uploads/';
     if (!file_exists($uploads_dir)) {
-        mkdir($uploads_dir, 0755, true);
+        @mkdir($uploads_dir, 0777, true);
     }
 
     $file_info = pathinfo($_FILES['file']['name']);
@@ -172,6 +175,7 @@ if ($action === 'upload_image') {
     $target_path = $uploads_dir . $filename;
 
     if (move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
+        @chmod($target_path, 0666);
         echo json_encode([
             'success' => true,
             'url' => '/uploads/' . $filename,

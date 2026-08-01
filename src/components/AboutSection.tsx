@@ -8,7 +8,7 @@ const AboutSection = () => {
   const [data, setData] = useState(() => aboutData);
 
   useEffect(() => {
-    fetch("/content/about.json")
+    fetch("/content/about.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
         if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));

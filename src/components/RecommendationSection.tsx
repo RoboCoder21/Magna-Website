@@ -14,7 +14,7 @@ const RecommendationSection = () => {
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/content/recommendations.json")
+    fetch("/content/recommendations.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
         if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));

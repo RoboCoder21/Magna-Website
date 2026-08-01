@@ -77,7 +77,7 @@ const ServicesSection = () => {
   const [data, setData] = useState(() => servicesData);
 
   useEffect(() => {
-    fetch("/content/services.json")
+    fetch("/content/services.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
         if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
