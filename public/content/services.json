@@ -1,0 +1,52 @@
+{
+  "services": [
+    {
+      "iconKey": "Lightbulb",
+      "title": "Creative & strategy",
+      "description": "Concept, story, and visual language that anchor every experience.",
+      "meta": "Branding / art direction / scripting"
+    },
+    {
+      "iconKey": "CalendarRange",
+      "title": "Event solutions",
+      "description": "End-to-end shows, summits, launches, and award nights—planned and run by one crew.",
+      "meta": "Run of show / talent / stagecraft"
+    },
+    {
+      "iconKey": "Clapperboard",
+      "title": "Audio + video",
+      "description": "Cinematic capture, live switching, multicam streaming, and fast post drops.",
+      "meta": "TVC / docu / livestream / highlight films"
+    },
+    {
+      "iconKey": "Radio",
+      "title": "Broadcast & streaming",
+      "description": "Control rooms that sync with your platforms—studio or on-site anywhere.",
+      "meta": "Hybrid events / broadcast engineering"
+    },
+    {
+      "iconKey": "Layers",
+      "title": "Scenic & lighting",
+      "description": "Stage design, LED, lighting design, and show cues that move with the music.",
+      "meta": "Fabrication / rigging / pixels / cues"
+    },
+    {
+      "iconKey": "Zap",
+      "title": "Experience operations",
+      "description": "Touring crews, technical riders, logistics, and vendor orchestration.",
+      "meta": "Production management / touring"
+    },
+    {
+      "iconKey": "Workflow",
+      "title": "Content lab",
+      "description": "Editors, animators, and color working in lockstep with the show floor.",
+      "meta": "Edit bays / VFX / color"
+    },
+    {
+      "iconKey": "Workflow",
+      "title": "360 Degree Agency",
+      "description": "full-service marketing and communications firm that handles all aspects of a brand's strategy under one roof.",
+      "meta": "Marketing / PR / Brand Strategy"
+    }
+  ]
+}

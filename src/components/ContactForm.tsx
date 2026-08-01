@@ -38,12 +38,24 @@ const eventTypes = [
 ];
 
 
+import { useEffect } from "react";
 import contactData from "@/content/contact.json";
 
 const ContactForm = () => {
-  const contactAddress = contactData.location || "MESKEL FLOWER BEHIND DREAMLINER HOTEL JEMA BUILDING 6TH FLOOR";
-  const contactPhones = contactData.phones || "+251942888555\n+251911605758\n+251911345531";
-  const contactEmail = contactData.email || "info@magnapromotion.com";
+  const [data, setData] = useState(() => contactData);
+
+  useEffect(() => {
+    fetch("/content/contact.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((remoteData) => {
+        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+      })
+      .catch(() => {});
+  }, []);
+
+  const contactAddress = data.location || "MESKEL FLOWER BEHIND DREAMLINER HOTEL JEMA BUILDING 6TH FLOOR";
+  const contactPhones = data.phones || "+251942888555\n+251911605758\n+251911345531";
+  const contactEmail = data.email || "info@magnapromotion.com";
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {

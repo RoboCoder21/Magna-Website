@@ -68,26 +68,42 @@ const pillVariants = {
 };
 
 const HeroSection = () => {
+  const [data, setData] = useState(() => heroData);
   const [headlineIndex, setHeadlineIndex] = useState(0);
   const [subtextIndex, setSubtextIndex] = useState(0);
   const [ctaIndex, setCtaIndex] = useState(0);
 
   useEffect(() => {
+    fetch("/content/hero.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((remoteData) => {
+        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+      })
+      .catch(() => {});
+  }, []);
+
+  const activeCapabilities = data.capabilities?.length ? data.capabilities : capabilities;
+  const activeHeadlinePhrases = data.headlinePhrases?.length ? data.headlinePhrases : headlinePhrases;
+  const activeSubtextPhrases = data.subtextPhrases?.length ? data.subtextPhrases : subtextPhrases;
+  const activeCtaPhrases = data.ctaPhrases?.length ? data.ctaPhrases : ctaPhrases;
+  const activeHeroImage = data.heroImage || heroImage;
+
+  useEffect(() => {
     const headTimer = setInterval(() => {
-      setHeadlineIndex((i) => (i + 1) % headlinePhrases.length);
+      setHeadlineIndex((i) => (i + 1) % activeHeadlinePhrases.length);
     }, 3400);
     const subTimer = setInterval(() => {
-      setSubtextIndex((i) => (i + 1) % subtextPhrases.length);
+      setSubtextIndex((i) => (i + 1) % activeSubtextPhrases.length);
     }, 4200);
     const ctaTimer = setInterval(() => {
-      setCtaIndex((i) => (i + 1) % ctaPhrases.length);
+      setCtaIndex((i) => (i + 1) % activeCtaPhrases.length);
     }, 5200);
     return () => {
       clearInterval(headTimer);
       clearInterval(subTimer);
       clearInterval(ctaTimer);
     };
-  }, []);
+  }, [activeHeadlinePhrases.length, activeSubtextPhrases.length, activeCtaPhrases.length]);
 
   return (
     <section
@@ -96,7 +112,7 @@ const HeroSection = () => {
     >
       <div className="absolute inset-0">
         <img
-          src={heroImage}
+          src={activeHeroImage}
           alt="Stage production backdrop"
           className="h-full w-full object-cover brightness-[0.82] contrast-110"
         />
@@ -133,14 +149,14 @@ const HeroSection = () => {
             >
               <AnimatePresence mode="wait">
                 <motion.span
-                  key={headlinePhrases[headlineIndex]}
+                  key={activeHeadlinePhrases[headlineIndex % activeHeadlinePhrases.length]}
                   initial={{ opacity: 0, y: 26, filter: "blur(6px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -22, filter: "blur(6px)" }}
                   transition={{ duration: 0.65, ease: "easeOut" }}
                   className="inline-block text-gradient-gold"
                 >
-                  {headlinePhrases[headlineIndex]}
+                  {activeHeadlinePhrases[headlineIndex % activeHeadlinePhrases.length]}
                 </motion.span>
               </AnimatePresence>
             </motion.h1>
@@ -154,14 +170,14 @@ const HeroSection = () => {
             >
               <AnimatePresence mode="wait">
                 <motion.span
-                  key={subtextPhrases[subtextIndex]}
+                  key={activeSubtextPhrases[subtextIndex % activeSubtextPhrases.length]}
                   initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -16, filter: "blur(6px)" }}
                   transition={{ duration: 0.55, ease: "easeOut" }}
                   className="inline-block"
                 >
-                  {subtextPhrases[subtextIndex]}
+                  {activeSubtextPhrases[subtextIndex % activeSubtextPhrases.length]}
                 </motion.span>
               </AnimatePresence>
             </motion.p>
@@ -181,13 +197,13 @@ const HeroSection = () => {
                 <a href="#contact" className="flex items-center gap-2">
                   <AnimatePresence mode="wait">
                     <motion.span
-                      key={ctaPhrases[ctaIndex]}
+                      key={activeCtaPhrases[ctaIndex % activeCtaPhrases.length]}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.35 }}
                     >
-                      {ctaPhrases[ctaIndex]}
+                      {activeCtaPhrases[ctaIndex % activeCtaPhrases.length]}
                     </motion.span>
                   </AnimatePresence>
                   <ArrowRight className="h-5 w-5" />
@@ -207,7 +223,7 @@ const HeroSection = () => {
               animate="visible"
               className="flex flex-wrap gap-3 justify-center"
             >
-              {capabilities.map((item) => (
+              {activeCapabilities.map((item) => (
                 <motion.a
                   key={item.label}
                   variants={pillVariants}

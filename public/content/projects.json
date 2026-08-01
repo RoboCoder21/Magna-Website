@@ -1,0 +1,36 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "Africa Union",
+      "client": "Africa Union",
+      "category": "Event",
+      "image": "",
+      "gallery": []
+    },
+    {
+      "id": 2,
+      "title": "Phacs",
+      "client": "Phacs",
+      "category": "Corporate",
+      "image": "",
+      "gallery": []
+    },
+    {
+      "id": 3,
+      "title": "Sheger City",
+      "client": "Sheger City",
+      "category": "Public Event",
+      "image": "",
+      "gallery": []
+    },
+    {
+      "id": 4,
+      "title": "Dashin Beer",
+      "client": "Dashin Beer",
+      "category": "Corporate",
+      "image": "",
+      "gallery": []
+    }
+  ]
+}

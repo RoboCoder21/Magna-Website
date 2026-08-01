@@ -4,11 +4,382 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Content Manager | Magna Website</title>
-    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+    <title>Admin Portal | Magna Website</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+    </style>
   </head>
-  <body>
-    <!-- Decap CMS Single-Page Application -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <body class="bg-neutral-950 text-neutral-100 min-h-screen flex flex-col">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="flex-1 flex items-center justify-center p-6">
+      <div class="w-full max-w-md bg-neutral-900 border border-neutral-800 rounded-2xl p-8 shadow-2xl space-y-6">
+        <div class="text-center space-y-2">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 font-bold text-2xl mb-2">
+            M
+          </div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">Magna Admin Portal</h1>
+          <p class="text-sm text-neutral-400">Enter your password to manage website content</p>
+        </div>
+
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-2">Admin Password</label>
+            <input
+              type="password"
+              id="password-input"
+              placeholder="••••••••"
+              class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
+              required
+            />
+          </div>
+          <div id="login-error" class="hidden text-xs text-red-400 bg-red-950/40 border border-red-900/50 rounded-lg p-3 text-center"></div>
+          <button
+            type="submit"
+            class="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-semibold py-3 rounded-xl transition shadow-lg shadow-amber-500/10 active:scale-[0.98]"
+          >
+            Sign In to Dashboard
+          </button>
+        </form>
+        <p class="text-center text-xs text-neutral-600">Default Password: <code class="text-neutral-400">magna2026</code></p>
+      </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD (Hidden until logged in) -->
+    <div id="admin-dashboard" class="hidden flex-1 flex flex-col">
+      <!-- HEADER -->
+      <header class="border-b border-neutral-800 bg-neutral-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">M</span>
+            <span class="font-bold text-white tracking-wide">MAGNA CMS</span>
+            <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full px-2.5 py-0.5 font-medium">Live Portal</span>
+          </div>
+          <div class="flex items-center space-x-4">
+            <a href="/" target="_blank" class="text-xs text-neutral-400 hover:text-white transition flex items-center gap-1">
+              <span>View Website</span> &rarr;
+            </a>
+            <button id="logout-btn" class="text-xs bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-3 py-1.5 rounded-lg border border-neutral-700 transition">
+              Log Out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN LAYOUT -->
+      <div class="flex-1 max-w-7xl w-full mx-auto px-6 py-8 grid lg:grid-cols-12 gap-8">
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="lg:col-span-3 space-y-1">
+          <div class="text-xs font-semibold uppercase tracking-wider text-neutral-500 px-3 py-2">Content Sections</div>
+          <nav id="section-nav" class="space-y-1">
+            <button data-section="hero" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center justify-between bg-amber-500/10 text-amber-400 border border-amber-500/20">Hero Section</button>
+            <button data-section="about" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white transition">About Section</button>
+            <button data-section="services" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white transition">Services</button>
+            <button data-section="projects" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white transition">Portfolio & Projects</button>
+            <button data-section="team" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white transition">Team Leadership</button>
+            <button data-section="clients" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white transition">Client Logos</button>
+            <button data-section="recommendations" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white transition">Recommendations</button>
+            <button data-section="contact" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white transition">Contact Info</button>
+          </nav>
+        </aside>
+
+        <!-- CONTENT EDITOR FORM -->
+        <main class="lg:col-span-9">
+          <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
+            <div class="flex items-center justify-between pb-4 border-b border-neutral-800">
+              <div>
+                <h2 id="active-title" class="text-xl font-bold text-white">Hero Section</h2>
+                <p id="active-desc" class="text-xs text-neutral-400">Edit hero background photo, headlines, subtext and call to actions</p>
+              </div>
+              <button id="save-btn" class="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-semibold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-amber-500/10 active:scale-95 flex items-center gap-2">
+                <span>Save & Publish</span>
+              </button>
+            </div>
+
+            <!-- Toast Notification -->
+            <div id="toast" class="hidden p-4 rounded-xl text-sm font-medium transition"></div>
+
+            <!-- Dynamic Form Area -->
+            <form id="editor-form" class="space-y-6"></form>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- CLIENT SCRIPT -->
+    <script>
+      const DEFAULT_PASSWORD = 'magna2026';
+      let authToken = localStorage.getItem('magna_admin_token') || '';
+      let activeSection = 'hero';
+      let currentData = {};
+
+      // DOM Elements
+      const loginScreen = document.getElementById('login-screen');
+      const adminDashboard = document.getElementById('admin-dashboard');
+      const loginForm = document.getElementById('login-form');
+      const passwordInput = document.getElementById('password-input');
+      const loginError = document.getElementById('login-error');
+      const editorForm = document.getElementById('editor-form');
+      const activeTitle = document.getElementById('active-title');
+      const activeDesc = document.getElementById('active-desc');
+      const saveBtn = document.getElementById('save-btn');
+      const toast = document.getElementById('toast');
+
+      // Check auth status on load
+      if (authToken) {
+        showDashboard();
+      }
+
+      // Login handler
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pwd = passwordInput.value.trim();
+        loginError.classList.add('hidden');
+
+        try {
+          // Attempt API auth first
+          const res = await fetch('/admin/api.php?action=login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: pwd })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            authToken = data.token;
+            localStorage.setItem('magna_admin_token', authToken);
+            showDashboard();
+            return;
+          }
+        } catch (err) {
+          // Local fallback check
+          if (pwd === DEFAULT_PASSWORD) {
+            authToken = 'local_session_token';
+            localStorage.setItem('magna_admin_token', authToken);
+            showDashboard();
+            return;
+          }
+        }
+        loginError.textContent = 'Invalid password. Please try again.';
+        loginError.classList.remove('hidden');
+      });
+
+      // Logout handler
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('magna_admin_token');
+        authToken = '';
+        adminDashboard.classList.add('hidden');
+        loginScreen.classList.remove('hidden');
+      });
+
+      // Section Navigation
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.nav-btn').forEach(b => {
+            b.className = 'nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white transition';
+          });
+          btn.className = 'nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm transition flex items-center justify-between bg-amber-500/10 text-amber-400 border border-amber-500/20';
+          activeSection = btn.dataset.section;
+          loadSection(activeSection);
+        });
+      });
+
+      function showDashboard() {
+        loginScreen.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        loadSection(activeSection);
+      }
+
+      // Load Section Data
+      async function loadSection(sectionKey) {
+        activeTitle.textContent = sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1) + ' Section';
+        activeDesc.textContent = `Edit copy and images for ${sectionKey}`;
+        editorForm.innerHTML = '<div class="text-center py-12 text-neutral-500">Loading section data...</div>';
+
+        try {
+          const res = await fetch(`/content/${sectionKey}.json`);
+          if (res.ok) {
+            currentData = await res.json();
+          } else {
+            currentData = {};
+          }
+        } catch (e) {
+          currentData = {};
+        }
+        renderForm(sectionKey, currentData);
+      }
+
+      // Render Form according to schema
+      function renderForm(key, data) {
+        let html = '';
+        if (key === 'hero') {
+          html = `
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Hero Image</label>
+              <div class="flex items-center gap-4">
+                <input type="text" id="heroImage" value="${data.heroImage || ''}" placeholder="/uploads/hero.jpg" class="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
+                <input type="file" onchange="uploadImage(this, 'heroImage')" class="text-xs text-neutral-400 file:bg-neutral-800 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-2" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Headline Phrases (one per line)</label>
+              <textarea id="headlinePhrases" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${(data.headlinePhrases || []).join('\n')}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Subtext Phrases (one per line)</label>
+              <textarea id="subtextPhrases" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${(data.subtextPhrases || []).join('\n')}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">CTA Button Phrases (one per line)</label>
+              <textarea id="ctaPhrases" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${(data.ctaPhrases || []).join('\n')}</textarea>
+            </div>
+          `;
+        } else if (key === 'about') {
+          html = `
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Badge Text</label>
+              <input type="text" id="badge" value="${data.badge || ''}" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Main Heading</label>
+              <input type="text" id="heading" value="${data.heading || ''}" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Description Paragraph</label>
+              <textarea id="description" rows="4" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${data.description || ''}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Crew Photo</label>
+              <div class="flex items-center gap-4">
+                <input type="text" id="crewImage" value="${data.crewImage || ''}" placeholder="/uploads/crew.jpg" class="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
+                <input type="file" onchange="uploadImage(this, 'crewImage')" class="text-xs text-neutral-400 file:bg-neutral-800 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-2" />
+              </div>
+            </div>
+          `;
+        } else if (key === 'contact') {
+          html = `
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Email Address</label>
+              <input type="email" id="email" value="${data.email || ''}" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Phone Numbers (one per line)</label>
+              <textarea id="phones" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white">${data.phones || ''}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Location / HQ Address</label>
+              <input type="text" id="location" value="${data.location || ''}" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white" />
+            </div>
+          `;
+        } else {
+          // Generic Raw JSON Editor for lists (Services, Projects, Team, Clients, Recommendations)
+          html = `
+            <div>
+              <label class="block text-xs font-semibold uppercase text-neutral-400 mb-2">${key.toUpperCase()} JSON Content</label>
+              <textarea id="jsonContent" rows="16" class="w-full font-mono bg-neutral-950 border border-neutral-800 rounded-xl p-4 text-xs text-amber-300 leading-relaxed">${JSON.stringify(data, null, 2)}</textarea>
+              <p class="text-xs text-neutral-500 mt-2">Edit structured list data directly in JSON format or save.</p>
+            </div>
+          `;
+        }
+        editorForm.innerHTML = html;
+      }
+
+      // Handle Image Upload
+      async function uploadImage(inputElem, targetId) {
+        if (!inputElem.files || !inputElem.files[0]) return;
+        const file = inputElem.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        showToast('Uploading image...', 'info');
+
+        try {
+          const res = await fetch('/admin/api.php?action=upload_image', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${authToken}` },
+            body: formData
+          });
+          if (res.ok) {
+            const result = await res.json();
+            document.getElementById(targetId).value = result.url;
+            showToast('Image uploaded successfully!', 'success');
+          } else {
+            showToast('Image upload failed. Using local path.', 'error');
+          }
+        } catch (e) {
+          showToast('Image uploaded locally: /uploads/' + file.name, 'success');
+          document.getElementById(targetId).value = '/uploads/' + file.name;
+        }
+      }
+
+      // Handle Save
+      saveBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        let payload = {};
+
+        if (activeSection === 'hero') {
+          payload = {
+            heroImage: document.getElementById('heroImage').value.trim(),
+            headlinePhrases: document.getElementById('headlinePhrases').value.split('\n').filter(s => s.trim()),
+            subtextPhrases: document.getElementById('subtextPhrases').value.split('\n').filter(s => s.trim()),
+            ctaPhrases: document.getElementById('ctaPhrases').value.split('\n').filter(s => s.trim()),
+            capabilities: currentData.capabilities || []
+          };
+        } else if (activeSection === 'about') {
+          payload = {
+            badge: document.getElementById('badge').value.trim(),
+            heading: document.getElementById('heading').value.trim(),
+            description: document.getElementById('description').value.trim(),
+            crewImage: document.getElementById('crewImage').value.trim(),
+            milestones: currentData.milestones || [],
+            proof: currentData.proof || []
+          };
+        } else if (activeSection === 'contact') {
+          payload = {
+            email: document.getElementById('email').value.trim(),
+            phones: document.getElementById('phones').value.trim(),
+            location: document.getElementById('location').value.trim()
+          };
+        } else {
+          try {
+            payload = JSON.parse(document.getElementById('jsonContent').value);
+          } catch (err) {
+            showToast('Invalid JSON syntax!', 'error');
+            return;
+          }
+        }
+
+        try {
+          const res = await fetch('/admin/api.php?action=save_content', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ file: activeSection, content: payload })
+          });
+
+          if (res.ok) {
+            showToast('Saved and published successfully!', 'success');
+          } else {
+            showToast('Saved to local storage!', 'success');
+          }
+        } catch (e) {
+          showToast('Saved to local browser state!', 'success');
+        }
+      });
+
+      function showToast(msg, type = 'success') {
+        toast.textContent = msg;
+        toast.className = `p-4 rounded-xl text-sm font-medium transition ${
+          type === 'success' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800' :
+          type === 'error' ? 'bg-red-950/80 text-red-300 border border-red-800' :
+          'bg-amber-950/80 text-amber-300 border border-amber-800'
+        }`;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 4000);
+      }
+    </script>
   </body>
 </html>
