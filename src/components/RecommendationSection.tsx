@@ -9,16 +9,26 @@ const defaultRecommendationLetters = [
   client1Image,
 ];
 
-const recommendationLetters = recommendationsData.recommendationLetters?.length
-  ? recommendationsData.recommendationLetters.map((item, index) => {
-      if (typeof item === "string" && item) return item;
-      if (typeof item === "object" && item.image) return item.image;
-      return defaultRecommendationLetters[index] || client1Image;
-    })
-  : defaultRecommendationLetters;
-
 const RecommendationSection = () => {
+  const [data, setData] = useState(() => recommendationsData);
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/content/recommendations.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((remoteData) => {
+        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+      })
+      .catch(() => {});
+  }, []);
+
+  const recommendationLetters = data.recommendationLetters?.length
+    ? data.recommendationLetters.map((item, index) => {
+        if (typeof item === "string" && item) return item;
+        if (typeof item === "object" && item.image) return item.image;
+        return defaultRecommendationLetters[index] || client1Image;
+      })
+    : defaultRecommendationLetters;
   const x = useMotionValue(0);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);

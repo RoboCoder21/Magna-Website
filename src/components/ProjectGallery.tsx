@@ -58,29 +58,41 @@ const defaultProjects = [
   },
 ];
 
-const projects = projectsData.projects?.length
-  ? projectsData.projects.map((proj, index) => {
-      const fallback = defaultProjects[index] || defaultProjects[0];
-      const coverImage = proj.image || fallback.image;
-      const rawGallery = proj.gallery || [];
-      const galleryImages = rawGallery.length
-        ? rawGallery.map((item) => (typeof item === "string" ? item : item.image || item))
-        : fallback.gallery;
-
-      return {
-        id: proj.id || index + 1,
-        title: proj.title || fallback.title,
-        client: proj.client || fallback.client,
-        category: proj.category || fallback.category,
-        image: coverImage,
-        gallery: galleryImages,
-      };
-    })
-  : defaultProjects;
+import { useEffect } from "react";
 
 const ProjectGallery = () => {
-  const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  const [data, setData] = useState(() => projectsData);
+  const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    fetch("/content/projects.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((remoteData) => {
+        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+      })
+      .catch(() => {});
+  }, []);
+
+  const projects = data.projects?.length
+    ? data.projects.map((proj, index) => {
+        const fallback = defaultProjects[index] || defaultProjects[0];
+        const coverImage = proj.image || fallback.image;
+        const rawGallery = proj.gallery || [];
+        const galleryImages = rawGallery.length
+          ? rawGallery.map((item) => (typeof item === "string" ? item : item.image || item))
+          : fallback.gallery;
+
+        return {
+          id: proj.id || index + 1,
+          title: proj.title || fallback.title,
+          client: proj.client || fallback.client,
+          category: proj.category || fallback.category,
+          image: coverImage,
+          gallery: galleryImages,
+        };
+      })
+    : defaultProjects;
 
   const openGallery = (project: typeof projects[0]) => {
     setSelectedProject(project);

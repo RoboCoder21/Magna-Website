@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   CalendarRange,
@@ -72,16 +73,26 @@ const defaultServices = [
   },
 ];
 
-const services = servicesData.services?.length
-  ? servicesData.services.map((item) => ({
-      icon: iconMap[item.iconKey || "Lightbulb"] || Lightbulb,
-      title: item.title,
-      description: item.description,
-      meta: item.meta || "",
-    }))
-  : defaultServices;
-
 const ServicesSection = () => {
+  const [data, setData] = useState(() => servicesData);
+
+  useEffect(() => {
+    fetch("/content/services.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((remoteData) => {
+        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+      })
+      .catch(() => {});
+  }, []);
+
+  const services = data.services?.length
+    ? data.services.map((item) => ({
+        icon: iconMap[item.iconKey || "Lightbulb"] || Lightbulb,
+        title: item.title,
+        description: item.description,
+        meta: item.meta || "",
+      }))
+    : defaultServices;
   return (
     <section
       id="services"

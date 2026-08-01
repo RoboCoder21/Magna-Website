@@ -40,19 +40,31 @@ const defaultLeaders = [
   },
 ];
 
-const leaders = teamData.leaders?.length
-  ? teamData.leaders.map((leader, index) => {
-      const fallback = defaultLeaders[index] || defaultLeaders[0];
-      return {
-        name: leader.name || fallback.name,
-        title: leader.title || fallback.title,
-        focus: leader.focus || fallback.focus,
-        image: leader.image || fallback.image,
-      };
-    })
-  : defaultLeaders;
+import { useEffect, useState } from "react";
 
 const TeamSection = () => {
+  const [data, setData] = useState(() => teamData);
+
+  useEffect(() => {
+    fetch("/content/team.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((remoteData) => {
+        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+      })
+      .catch(() => {});
+  }, []);
+
+  const leaders = data.leaders?.length
+    ? data.leaders.map((leader, index) => {
+        const fallback = defaultLeaders[index] || defaultLeaders[0];
+        return {
+          name: leader.name || fallback.name,
+          title: leader.title || fallback.title,
+          focus: leader.focus || fallback.focus,
+          image: leader.image || fallback.image,
+        };
+      })
+    : defaultLeaders;
   return (
     <section
       id="team"

@@ -21,17 +21,27 @@ const defaultClients = [
   { name: "EMBASSY OF THE STATE OF KUWAIT", logo: embassyLogo },
 ];
 
-const clients = clientsData.clients?.length
-  ? clientsData.clients.map((client, index) => {
-      const fallback = defaultClients[index] || defaultClients[0];
-      return {
-        name: client.name || fallback.name,
-        logo: client.logo || fallback.logo,
-      };
-    })
-  : defaultClients;
-
 const ClientsSection = () => {
+  const [data, setData] = useState(() => clientsData);
+
+  useEffect(() => {
+    fetch("/content/clients.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((remoteData) => {
+        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+      })
+      .catch(() => {});
+  }, []);
+
+  const clients = data.clients?.length
+    ? data.clients.map((client, index) => {
+        const fallback = defaultClients[index] || defaultClients[0];
+        return {
+          name: client.name || fallback.name,
+          logo: client.logo || fallback.logo,
+        };
+      })
+    : defaultClients;
   const [logoRatios, setLogoRatios] = useState<Record<string, number>>({});
   const x = useMotionValue(0);
   const trackRef = useRef<HTMLDivElement | null>(null);
