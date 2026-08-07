@@ -599,6 +599,18 @@
           ${createTextInput('Email Address', 'email', data.email || 'info@magnapromotion.com')}
           ${createTextareaInput('Phone Numbers (one per line)', 'phones', data.phones || '')}
           ${createTextInput('HQ Location / Physical Address', 'location', data.location || '')}
+
+          <div class="border-t border-neutral-800 pt-5 space-y-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">Social Media Links</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              ${createTextInput('TikTok URL', 'tiktok', data.tiktok || 'https://www.tiktok.com')}
+              ${createTextInput('Instagram URL', 'instagram', data.instagram || 'https://www.instagram.com')}
+              ${createTextInput('YouTube URL', 'youtube', data.youtube || 'https://www.youtube.com')}
+              ${createTextInput('Facebook URL', 'facebook', data.facebook || 'https://www.facebook.com')}
+              ${createTextInput('LinkedIn URL', 'linkedin', data.linkedin || 'https://www.linkedin.com')}
+              ${createTextInput('Telegram URL', 'telegram', data.telegram || 'https://t.me')}
+            </div>
+          </div>
         `;
         editorContainer.appendChild(div);
       }
@@ -752,6 +764,12 @@
           currentData.email = getVal('email');
           currentData.phones = getVal('phones');
           currentData.location = getVal('location');
+          currentData.tiktok = getVal('tiktok');
+          currentData.instagram = getVal('instagram');
+          currentData.youtube = getVal('youtube');
+          currentData.facebook = getVal('facebook');
+          currentData.linkedin = getVal('linkedin');
+          currentData.telegram = getVal('telegram');
         }
       }
 

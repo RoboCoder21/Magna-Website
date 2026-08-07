@@ -1,5 +1,13 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Instagram, Youtube, Facebook, Linkedin, ArrowUp } from "lucide-react";
+import { Instagram, Youtube, Facebook, Linkedin, Send, ArrowUp } from "lucide-react";
+import contactData from "@/content/contact.json";
+
+const TikTokIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 1 1-2.896-2.896c.244 0 .478.03.704.084V9.375a6.34 6.34 0 0 0-.704-.04 6.341 6.341 0 1 0 6.341 6.341V8.662a8.204 8.204 0 0 0 4.77 1.516v-3.445a4.833 4.833 0 0 1-1.000-.047z"/>
+  </svg>
+);
 
 const footerLinks = {
   services: [
@@ -20,17 +28,38 @@ const footerLinks = {
   ],
 };
 
-const socialLinks = [
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Youtube, href: "#", label: "YouTube" },
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-];
-
 const Footer = () => {
+  const [data, setData] = useState(() => contactData);
+
+  useEffect(() => {
+    const local = localStorage.getItem("magna_content_contact");
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        if (parsed) setData((prev) => ({ ...prev, ...parsed }));
+      } catch (e) {}
+    }
+
+    fetch("/content/contact.json?t=" + Date.now())
+      .then((res) => (res.ok ? res.json() : null))
+      .then((remoteData) => {
+        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+      })
+      .catch(() => {});
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const socialItems = [
+    { icon: TikTokIcon, href: (data as any).tiktok || "#", label: "TikTok" },
+    { icon: Instagram, href: (data as any).instagram || "#", label: "Instagram" },
+    { icon: Youtube, href: (data as any).youtube || "#", label: "YouTube" },
+    { icon: Facebook, href: (data as any).facebook || "#", label: "Facebook" },
+    { icon: Linkedin, href: (data as any).linkedin || "#", label: "LinkedIn" },
+    { icon: Send, href: (data as any).telegram || "#", label: "Telegram" },
+  ];
 
   return (
     <footer className="relative pt-24 pb-8 overflow-hidden">
@@ -55,18 +84,24 @@ const Footer = () => {
               Event, film, and digital crews working as one. We ship experiences that travel beyond the venue.
             </p>
             {/* Social Links */}
-            <div className="flex items-center gap-4">
-              {socialLinks.map((social) => (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  aria-label={social.label}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  className="w-10 h-10 rounded-full glass flex items-center justify-center text-muted-foreground hover:text-gold hover:border-gold/30 transition-colors"
-                >
-                  <social.icon className="w-5 h-5" />
-                </motion.a>
-              ))}
+            <div className="flex flex-wrap items-center gap-3">
+              {socialItems.map((social) => {
+                if (!social.href || social.href === "") return null;
+                const isExternal = social.href.startsWith("http");
+                return (
+                  <motion.a
+                    key={social.label}
+                    href={social.href}
+                    target={isExternal ? "_blank" : "_self"}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                    aria-label={social.label}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    className="w-10 h-10 rounded-full glass flex items-center justify-center text-muted-foreground hover:text-gold hover:border-gold/30 transition-colors"
+                  >
+                    <social.icon className="w-5 h-5" />
+                  </motion.a>
+                );
+              })}
             </div>
           </div>
 
