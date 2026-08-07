@@ -66,28 +66,57 @@ const ProjectGallery = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
+    const local = localStorage.getItem("magna_content_projects");
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        if (parsed.projects?.length) {
+          setData(parsed);
+        }
+      } catch (e) {}
+    }
+
     fetch("/content/projects.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
-        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+        if (remoteData?.projects?.length) setData(remoteData);
       })
       .catch(() => {});
   }, []);
 
+  const formatImg = (imgStr: string) => {
+    if (!imgStr) return "";
+    if (
+      !imgStr.startsWith("http") &&
+      !imgStr.startsWith("data:") &&
+      !imgStr.startsWith("/") &&
+      !imgStr.startsWith("src/")
+    ) {
+      return `/${imgStr}`;
+    }
+    return imgStr;
+  };
+
   const projects = data.projects?.length
     ? data.projects.map((proj, index) => {
-        const fallback = defaultProjects[index] || defaultProjects[0];
-        const coverImage = proj.image || fallback.image;
+        const fallback = defaultProjects[index];
+        const rawCover = proj.image || (fallback ? fallback.image : "");
+        const coverImage = formatImg(rawCover) || "/placeholder.svg";
+
         const rawGallery = proj.gallery || [];
-        const galleryImages = rawGallery.length
-          ? rawGallery.map((item) => (typeof item === "string" ? item : item.image || item))
-          : fallback.gallery;
+        let galleryImages = rawGallery.length
+          ? rawGallery.map((item: any) => formatImg(typeof item === "string" ? item : item.image || item))
+          : (fallback ? fallback.gallery : []);
+
+        if (!galleryImages.length && coverImage) {
+          galleryImages = [coverImage];
+        }
 
         return {
           id: proj.id || index + 1,
-          title: proj.title || fallback.title,
-          client: proj.client || fallback.client,
-          category: proj.category || fallback.category,
+          title: proj.title || (fallback ? fallback.title : `Project #${index + 1}`),
+          client: proj.client || (fallback ? fallback.client : ""),
+          category: proj.category || (fallback ? fallback.category : "Portfolio"),
           image: coverImage,
           gallery: galleryImages,
         };

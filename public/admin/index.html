@@ -177,6 +177,7 @@
 
       document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+          syncDomToData(activeSection);
           document.querySelectorAll('.nav-btn').forEach(b => {
             b.className = 'nav-btn w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-neutral-400 hover:bg-neutral-900 hover:text-white transition';
           });
@@ -225,14 +226,23 @@
           const res = await fetch(`/content/${sectionKey}.json?t=` + Date.now());
           if (res.ok) {
             currentData = await res.json();
+            const localSaved = localStorage.getItem('magna_content_' + sectionKey);
+            if (localSaved) {
+              try {
+                const parsed = JSON.parse(localSaved);
+                currentData = { ...currentData, ...parsed };
+              } catch(e) {}
+            }
           } else {
-            currentData = {};
+            const localSaved = localStorage.getItem('magna_content_' + sectionKey);
+            currentData = localSaved ? JSON.parse(localSaved) : {};
           }
         } catch (e) {
           if (sectionKey === 'submissions') {
             currentData = JSON.parse(localStorage.getItem('magna_local_submissions') || '[]');
           } else {
-            currentData = {};
+            const localSaved = localStorage.getItem('magna_content_' + sectionKey);
+            currentData = localSaved ? JSON.parse(localSaved) : {};
           }
         }
         renderVisualForm(sectionKey, currentData);
@@ -417,6 +427,21 @@
 
         let cardsHtml = '';
         list.forEach((item, index) => {
+          const gallery = Array.isArray(item.gallery) ? item.gallery : [];
+          let galleryHtml = '';
+          gallery.forEach((gImg, gIdx) => {
+            const gVal = typeof gImg === 'string' ? gImg : (gImg.image || '');
+            const hasGPreview = gVal ? `<img src="${gVal}" class="h-10 w-10 object-cover rounded-md border border-neutral-700" alt="Preview" />` : '';
+            galleryHtml += `
+              <div class="flex items-center gap-2 bg-neutral-900/60 p-2 rounded-lg border border-neutral-800" data-gallery-item="${gIdx}">
+                ${hasGPreview}
+                <input type="text" id="project_${index}_gallery_${gIdx}" value="${escapeHtml(gVal)}" placeholder="/uploads/gallery_photo.jpg" class="flex-1 bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-1.5 text-xs text-white" />
+                <input type="file" accept="image/*" onchange="uploadImage(this, 'project_${index}_gallery_${gIdx}')" class="text-xs text-neutral-400 file:bg-neutral-800 file:text-white file:border-0 file:rounded-md file:px-2.5 file:py-1 file:cursor-pointer" />
+                <button type="button" onclick="removeProjectGalleryItem(${index}, ${gIdx})" class="text-xs text-red-400 hover:text-red-300 px-2 py-1 transition">Delete</button>
+              </div>
+            `;
+          });
+
           cardsHtml += `
             <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-5 space-y-4" data-project-index="${index}">
               <div class="flex items-center justify-between border-b border-neutral-800/80 pb-3">
@@ -439,6 +464,17 @@
               </div>
 
               ${createImageUploader('Cover Image', `project_cover_${index}`, item.image || '')}
+
+              <!-- Gallery Photos -->
+              <div class="border-t border-neutral-800/80 pt-3 space-y-3">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-semibold uppercase text-amber-400">Project Gallery Photos (${gallery.length})</label>
+                  <button type="button" onclick="addProjectGalleryItem(${index})" class="text-xs bg-neutral-800 hover:bg-neutral-700 text-amber-400 px-3 py-1 rounded-lg border border-neutral-700 transition">
+                    + Add Gallery Photo
+                  </button>
+                </div>
+                <div class="space-y-2">${galleryHtml || '<p class="text-xs text-neutral-500 italic">No gallery photos added yet. Click "+ Add Gallery Photo" above to add photos.</p>'}</div>
+              </div>
             </div>
           `;
         });
@@ -610,7 +646,135 @@
         `;
       }
 
+      function syncDomToData(sectionKey) {
+        if (!sectionKey) return;
+        if (sectionKey === 'hero') {
+          currentData.heroImage = getVal('heroImage');
+          currentData.headlinePhrases = getList('headlinePhrases');
+          currentData.subtextPhrases = getList('subtextPhrases');
+          currentData.ctaPhrases = getList('ctaPhrases');
+        } else if (sectionKey === 'about') {
+          currentData.badge = getVal('badge');
+          currentData.heading = getVal('heading');
+          currentData.description = getVal('description');
+          currentData.crewImage = getVal('crewImage');
+        } else if (sectionKey === 'services') {
+          const cards = document.querySelectorAll('[data-service-index]');
+          const list = [];
+          cards.forEach(card => {
+            const titleEl = card.querySelector('[data-field="title"]');
+            const iconEl = card.querySelector('[data-field="iconKey"]');
+            const descEl = card.querySelector('[data-field="description"]');
+            const metaEl = card.querySelector('[data-field="meta"]');
+            if (titleEl) {
+              list.push({
+                title: titleEl.value.trim(),
+                iconKey: iconEl ? iconEl.value : 'Lightbulb',
+                description: descEl ? descEl.value.trim() : '',
+                meta: metaEl ? metaEl.value.trim() : ''
+              });
+            }
+          });
+          currentData.services = list;
+        } else if (sectionKey === 'projects') {
+          const cards = document.querySelectorAll('[data-project-index]');
+          const list = [];
+          cards.forEach((card, idx) => {
+            const titleEl = card.querySelector('[data-field="title"]');
+            const clientEl = card.querySelector('[data-field="client"]');
+            const catEl = card.querySelector('[data-field="category"]');
+            const coverInput = document.getElementById(`project_cover_${idx}`);
+
+            const galleryItems = [];
+            const gInputs = card.querySelectorAll(`[id^="project_${idx}_gallery_"]`);
+            gInputs.forEach(gInput => {
+              const val = gInput.value.trim();
+              if (val) galleryItems.push(val);
+            });
+
+            if (titleEl) {
+              list.push({
+                id: idx + 1,
+                title: titleEl.value.trim(),
+                client: clientEl ? clientEl.value.trim() : '',
+                category: catEl ? catEl.value.trim() : '',
+                image: coverInput ? coverInput.value.trim() : '',
+                gallery: galleryItems
+              });
+            }
+          });
+          currentData.projects = list;
+        } else if (sectionKey === 'team') {
+          const cards = document.querySelectorAll('[data-team-index]');
+          const list = [];
+          cards.forEach((card, idx) => {
+            const nameEl = card.querySelector('[data-field="name"]');
+            const titleEl = card.querySelector('[data-field="title"]');
+            const focusEl = card.querySelector('[data-field="focus"]');
+            const photoInput = document.getElementById(`team_photo_${idx}`);
+            if (nameEl) {
+              list.push({
+                name: nameEl.value.trim(),
+                title: titleEl ? titleEl.value.trim() : '',
+                focus: focusEl ? focusEl.value.trim() : '',
+                image: photoInput ? photoInput.value.trim() : ''
+              });
+            }
+          });
+          currentData.leaders = list;
+        } else if (sectionKey === 'clients') {
+          const cards = document.querySelectorAll('[data-client-index]');
+          const list = [];
+          cards.forEach((card, idx) => {
+            const nameEl = card.querySelector('[data-field="name"]');
+            const logoInput = document.getElementById(`client_logo_${idx}`);
+            if (nameEl) {
+              list.push({
+                name: nameEl.value.trim(),
+                logo: logoInput ? logoInput.value.trim() : ''
+              });
+            }
+          });
+          currentData.clients = list;
+        } else if (sectionKey === 'recommendations') {
+          const cards = document.querySelectorAll('[data-recommendation-index]');
+          const list = [];
+          cards.forEach((card, idx) => {
+            const imgInput = document.getElementById(`recommendation_img_${idx}`);
+            if (imgInput) {
+              list.push({
+                image: imgInput.value.trim()
+              });
+            }
+          });
+          currentData.recommendationLetters = list;
+        } else if (sectionKey === 'contact') {
+          currentData.email = getVal('email');
+          currentData.phones = getVal('phones');
+          currentData.location = getVal('location');
+        }
+      }
+
+      window.addProjectGalleryItem = function(projectIdx) {
+        syncDomToData('projects');
+        if (!currentData.projects || !currentData.projects[projectIdx]) return;
+        if (!currentData.projects[projectIdx].gallery) {
+          currentData.projects[projectIdx].gallery = [];
+        }
+        currentData.projects[projectIdx].gallery.push('');
+        renderVisualForm('projects', currentData);
+      };
+
+      window.removeProjectGalleryItem = function(projectIdx, galleryIdx) {
+        syncDomToData('projects');
+        if (currentData.projects && currentData.projects[projectIdx] && currentData.projects[projectIdx].gallery) {
+          currentData.projects[projectIdx].gallery.splice(galleryIdx, 1);
+        }
+        renderVisualForm('projects', currentData);
+      };
+
       window.addArrayItem = function(key) {
+        syncDomToData(key);
         if (key === 'services') {
           if (!currentData.services) currentData.services = [];
           currentData.services.push({ title: 'New Service', description: '', meta: '', iconKey: 'Lightbulb' });
@@ -631,6 +795,7 @@
       };
 
       window.removeArrayItem = function(key, index) {
+        syncDomToData(key);
         if (key === 'services' && currentData.services) {
           currentData.services.splice(index, 1);
         } else if (key === 'projects' && currentData.projects) {
@@ -678,6 +843,7 @@
                 container.insertBefore(newImg, container.firstChild);
               }
             }
+            syncDomToData(activeSection);
           } else {
             showToast('Upload failed: ' + (result.error || 'Server error'), 'error');
           }
@@ -688,93 +854,12 @@
 
       saveBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        let payload = {};
+        syncDomToData(activeSection);
+        const payload = JSON.parse(JSON.stringify(currentData));
 
-        if (activeSection === 'hero') {
-          payload = {
-            heroImage: getVal('heroImage'),
-            headlinePhrases: getList('headlinePhrases'),
-            subtextPhrases: getList('subtextPhrases'),
-            ctaPhrases: getList('ctaPhrases'),
-            capabilities: currentData.capabilities || []
-          };
-        } else if (activeSection === 'about') {
-          payload = {
-            badge: getVal('badge'),
-            heading: getVal('heading'),
-            description: getVal('description'),
-            crewImage: getVal('crewImage'),
-            milestones: currentData.milestones || [],
-            proof: currentData.proof || []
-          };
-        } else if (activeSection === 'services') {
-          const cards = document.querySelectorAll('[data-service-index]');
-          const servicesList = [];
-          cards.forEach(card => {
-            servicesList.push({
-              title: card.querySelector('[data-field="title"]').value.trim(),
-              iconKey: card.querySelector('[data-field="iconKey"]').value,
-              description: card.querySelector('[data-field="description"]').value.trim(),
-              meta: card.querySelector('[data-field="meta"]').value.trim()
-            });
-          });
-          payload = { services: servicesList };
-        } else if (activeSection === 'projects') {
-          const cards = document.querySelectorAll('[data-project-index]');
-          const projectsList = [];
-          cards.forEach((card, idx) => {
-            const coverInput = document.getElementById(`project_cover_${idx}`);
-            projectsList.push({
-              id: idx + 1,
-              title: card.querySelector('[data-field="title"]').value.trim(),
-              client: card.querySelector('[data-field="client"]').value.trim(),
-              category: card.querySelector('[data-field="category"]').value.trim(),
-              image: coverInput ? coverInput.value.trim() : '',
-              gallery: []
-            });
-          });
-          payload = { projects: projectsList };
-        } else if (activeSection === 'team') {
-          const cards = document.querySelectorAll('[data-team-index]');
-          const teamList = [];
-          cards.forEach((card, idx) => {
-            const photoInput = document.getElementById(`team_photo_${idx}`);
-            teamList.push({
-              name: card.querySelector('[data-field="name"]').value.trim(),
-              title: card.querySelector('[data-field="title"]').value.trim(),
-              focus: card.querySelector('[data-field="focus"]').value.trim(),
-              image: photoInput ? photoInput.value.trim() : ''
-            });
-          });
-          payload = { leaders: teamList };
-        } else if (activeSection === 'clients') {
-          const cards = document.querySelectorAll('[data-client-index]');
-          const clientsList = [];
-          cards.forEach((card, idx) => {
-            const logoInput = document.getElementById(`client_logo_${idx}`);
-            clientsList.push({
-              name: card.querySelector('[data-field="name"]').value.trim(),
-              logo: logoInput ? logoInput.value.trim() : ''
-            });
-          });
-          payload = { clients: clientsList };
-        } else if (activeSection === 'recommendations') {
-          const cards = document.querySelectorAll('[data-recommendation-index]');
-          const recList = [];
-          cards.forEach((card, idx) => {
-            const imgInput = document.getElementById(`recommendation_img_${idx}`);
-            recList.push({
-              image: imgInput ? imgInput.value.trim() : ''
-            });
-          });
-          payload = { recommendationLetters: recList };
-        } else if (activeSection === 'contact') {
-          payload = {
-            email: getVal('email'),
-            phones: getVal('phones'),
-            location: getVal('location')
-          };
-        }
+        try {
+          localStorage.setItem('magna_content_' + activeSection, JSON.stringify(payload));
+        } catch(e) {}
 
         try {
           const res = await fetch('/admin/api.php?action=save_content', {

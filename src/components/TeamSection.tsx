@@ -46,22 +46,41 @@ const TeamSection = () => {
   const [data, setData] = useState(() => teamData);
 
   useEffect(() => {
+    const local = localStorage.getItem("magna_content_team");
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        if (parsed.leaders?.length) {
+          setData(parsed);
+        }
+      } catch (e) {}
+    }
+
     fetch("/content/team.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
-        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+        if (remoteData?.leaders?.length) setData(remoteData);
       })
       .catch(() => {});
   }, []);
 
   const leaders = data.leaders?.length
     ? data.leaders.map((leader, index) => {
-        const fallback = defaultLeaders[index] || defaultLeaders[0];
+        const fallback = defaultLeaders[index];
+        const rawImg = leader.image || (fallback ? fallback.image : "");
+        const formattedImg =
+          rawImg &&
+          !rawImg.startsWith("http") &&
+          !rawImg.startsWith("data:") &&
+          !rawImg.startsWith("/") &&
+          !rawImg.startsWith("src/")
+            ? `/${rawImg}`
+            : rawImg || "/placeholder.svg";
         return {
-          name: leader.name || fallback.name,
-          title: leader.title || fallback.title,
-          focus: leader.focus || fallback.focus,
-          image: leader.image || fallback.image,
+          name: leader.name || (fallback ? fallback.name : "Team Member"),
+          title: leader.title || (fallback ? fallback.title : ""),
+          focus: leader.focus || (fallback ? fallback.focus : ""),
+          image: formattedImg,
         };
       })
     : defaultLeaders;

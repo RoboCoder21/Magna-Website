@@ -25,18 +25,28 @@ const ClientsSection = () => {
   const [data, setData] = useState(() => clientsData);
 
   useEffect(() => {
+    const local = localStorage.getItem("magna_content_clients");
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        if (parsed.clients?.length) {
+          setData(parsed);
+        }
+      } catch (e) {}
+    }
+
     fetch("/content/clients.json?t=" + Date.now())
       .then((res) => (res.ok ? res.json() : null))
       .then((remoteData) => {
-        if (remoteData) setData((prev) => ({ ...prev, ...remoteData }));
+        if (remoteData?.clients?.length) setData(remoteData);
       })
       .catch(() => {});
   }, []);
 
   const clients = data.clients?.length
     ? data.clients.map((client, index) => {
-        const fallback = defaultClients[index] || defaultClients[0];
-        const rawLogo = client.logo || fallback.logo;
+        const fallback = defaultClients[index];
+        const rawLogo = client.logo || (fallback ? fallback.logo : "");
         const formattedLogo =
           rawLogo &&
           !rawLogo.startsWith("http") &&
@@ -45,7 +55,7 @@ const ClientsSection = () => {
             ? `/${rawLogo}`
             : rawLogo;
         return {
-          name: client.name || fallback.name,
+          name: client.name || (fallback ? fallback.name : "Client"),
           logo: formattedLogo,
         };
       })
