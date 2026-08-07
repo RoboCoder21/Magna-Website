@@ -659,17 +659,30 @@
             headers: { 'Authorization': `Bearer ${authToken}` },
             body: formData
           });
-          if (res.ok) {
-            const result = await res.json();
-            document.getElementById(targetId).value = result.url;
+          const result = await res.json();
+          if (res.ok && result.success && result.url) {
+            const inputField = document.getElementById(targetId);
+            if (inputField) inputField.value = result.url;
             showToast('Image uploaded successfully!', 'success');
+
+            const container = inputField?.parentElement;
+            if (container) {
+              let imgPreview = container.querySelector('img');
+              if (imgPreview) {
+                imgPreview.src = result.url;
+              } else {
+                const newImg = document.createElement('img');
+                newImg.src = result.url;
+                newImg.className = 'h-12 w-12 object-cover rounded-lg border border-neutral-700';
+                newImg.alt = 'Preview';
+                container.insertBefore(newImg, container.firstChild);
+              }
+            }
           } else {
-            document.getElementById(targetId).value = '/uploads/' + file.name;
-            showToast('Image path set: /uploads/' + file.name, 'success');
+            showToast('Upload failed: ' + (result.error || 'Server error'), 'error');
           }
         } catch (e) {
-          document.getElementById(targetId).value = '/uploads/' + file.name;
-          showToast('Image path set: /uploads/' + file.name, 'success');
+          showToast('Upload failed: ' + e.message, 'error');
         }
       }
 

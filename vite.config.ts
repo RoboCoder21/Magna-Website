@@ -27,14 +27,69 @@ export default defineConfig(({ mode }) => ({
             const fs = await import("fs");
             const pathModule = await import("path");
 
-            let body = "";
-            req.on("data", (chunk) => { body += chunk; });
+            let chunks: Buffer[] = [];
+            req.on("data", (chunk) => { chunks.push(chunk); });
             req.on("end", () => {
+              const bodyBuffer = Buffer.concat(chunks);
+              const body = bodyBuffer.toString("utf-8");
               res.setHeader("Content-Type", "application/json");
 
               try {
                 if (action === "login") {
                   return res.end(JSON.stringify({ success: true, token: "local_session_token", message: "Logged in" }));
+                }
+
+                if (action === "upload_image") {
+                  const contentType = (req.headers["content-type"] || "") as string;
+                  const boundaryMatch = contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/i);
+                  const boundary = boundaryMatch ? (boundaryMatch[1] || boundaryMatch[2]).trim() : null;
+
+                  const uploadsDir = pathModule.resolve(__dirname, "public/uploads");
+                  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+                  if (boundary) {
+                    const boundaryBuf = Buffer.from(`--${boundary}`);
+                    let savedUrl = "";
+                    let start = 0;
+                    let pos = bodyBuffer.indexOf(boundaryBuf, start);
+
+                    while (pos !== -1) {
+                      const nextPos = bodyBuffer.indexOf(boundaryBuf, pos + boundaryBuf.length);
+                      if (nextPos === -1) break;
+
+                      const part = bodyBuffer.subarray(pos + boundaryBuf.length, nextPos);
+                      const headerEnd = part.indexOf("\r\n\r\n");
+
+                      if (headerEnd !== -1) {
+                        const headerStr = part.subarray(0, headerEnd).toString("utf-8");
+                        const filenameMatch = headerStr.match(/filename="([^"]+)"/i);
+
+                        if (filenameMatch && filenameMatch[1]) {
+                          const originalName = filenameMatch[1];
+                          const ext = pathModule.extname(originalName) || ".png";
+                          const safeName = pathModule.basename(originalName, ext).replace(/[^a-z0-9_-]/gi, "_");
+                          const filename = `${safeName}_${Date.now()}${ext}`;
+
+                          let fileData = part.subarray(headerEnd + 4);
+                          if (fileData.length >= 2 && fileData[fileData.length - 2] === 13 && fileData[fileData.length - 1] === 10) {
+                            fileData = fileData.subarray(0, fileData.length - 2);
+                          }
+
+                          fs.writeFileSync(pathModule.join(uploadsDir, filename), fileData);
+                          savedUrl = `/uploads/${filename}`;
+                          break;
+                        }
+                      }
+
+                      pos = nextPos;
+                    }
+
+                    if (savedUrl) {
+                      return res.end(JSON.stringify({ success: true, url: savedUrl, message: "Image uploaded successfully" }));
+                    }
+                  }
+
+                  return res.end(JSON.stringify({ success: false, error: "Failed to process uploaded file" }));
                 }
 
                 if (action === "submit_contact") {

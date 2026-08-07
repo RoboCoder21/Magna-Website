@@ -36,9 +36,17 @@ const ClientsSection = () => {
   const clients = data.clients?.length
     ? data.clients.map((client, index) => {
         const fallback = defaultClients[index] || defaultClients[0];
+        const rawLogo = client.logo || fallback.logo;
+        const formattedLogo =
+          rawLogo &&
+          !rawLogo.startsWith("http") &&
+          !rawLogo.startsWith("data:") &&
+          !rawLogo.startsWith("/")
+            ? `/${rawLogo}`
+            : rawLogo;
         return {
           name: client.name || fallback.name,
-          logo: client.logo || fallback.logo,
+          logo: formattedLogo,
         };
       })
     : defaultClients;
@@ -166,6 +174,12 @@ const ClientsSection = () => {
                         alt={`${client.name} logo`}
                         loading="lazy"
                         onLoad={handleLogoLoad(client.name)}
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src !== "/placeholder.svg" && !target.src.endsWith("/placeholder.svg")) {
+                            target.src = "/placeholder.svg";
+                          }
+                        }}
                         className="h-full w-full object-contain p-2 sm:p-3"
                       />
                     </div>
